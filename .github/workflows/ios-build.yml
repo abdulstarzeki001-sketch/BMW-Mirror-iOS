@@ -9,19 +9,30 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Repository preflight
+        run: bash Scripts/preflight.sh
+
+      - name: Show Xcode and SDK versions
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks
+
+      - name: Validate Xcode project
+        run: xcodebuild -list -project BMWMirror.xcodeproj
 
       - name: Build BMW Mirror for iOS Simulator
         run: |
+          set -o pipefail
           xcodebuild \
             -project BMWMirror.xcodeproj \
             -scheme BMWMirror \
             -configuration Debug \
-            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
             build
