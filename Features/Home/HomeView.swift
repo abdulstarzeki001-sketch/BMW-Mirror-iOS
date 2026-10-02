@@ -16,35 +16,14 @@ struct HomeView: View {
                         systemImage: carPlayManager.isConnected ? "car.side.fill" : "car.side"
                     )
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("حالة الاتصال")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Text(carPlayManager.lastEventText)
-                            .font(.subheadline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding()
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-
                     StatusCard(
-                        title: "التقاط الشاشة",
+                        title: "Media Pipeline",
                         value: captureManager.statusText,
-                        systemImage: captureManager.isCapturing ? "record.circle.fill" : "rectangle.on.rectangle"
+                        systemImage: captureManager.isCapturing ? "waveform.circle.fill" : "waveform.circle"
                     )
 
                     capturePreview
-
-                    HStack {
-                        Label("\(captureManager.frameCount) إطار", systemImage: "film.stack")
-                        Spacer()
-                        Text(captureManager.frameSizeText)
-                            .monospacedDigit()
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    pipelineMetrics
 
                     if let errorText = captureManager.errorText {
                         Text(errorText)
@@ -76,6 +55,11 @@ struct HomeView: View {
                             .padding(.vertical, 8)
                     }
                     .buttonStyle(.bordered)
+
+                    Text(carPlayManager.lastEventText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding()
             }
@@ -103,9 +87,9 @@ struct HomeView: View {
                 VStack(spacing: 10) {
                     Image(systemName: "iphone.gen3")
                         .font(.system(size: 34))
-                    Text("معاينة شاشة iPhone")
+                    Text("معاينة Media Pipeline")
                         .font(.headline)
-                    Text("اضغط بدء الالتقاط لعرض الإطارات هنا")
+                    Text("ابدأ الالتقاط لاختبار الفيديو والصوت والاتجاه")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -115,6 +99,33 @@ struct HomeView: View {
         .frame(maxWidth: .infinity)
         .aspectRatio(16 / 9, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    private var pipelineMetrics: some View {
+        VStack(spacing: 12) {
+            metricRow("FPS", value: "\(captureManager.actualFPSText) / \(captureManager.targetFPS)")
+            metricRow("زمن معالجة الإطار", value: captureManager.processingLatencyText)
+            metricRow("حجم المصدر", value: captureManager.sourceSizeText)
+            metricRow("حجم الإخراج", value: captureManager.frameSizeText)
+            metricRow("اتجاه الفيديو", value: captureManager.orientationText)
+            metricRow("إطارات معالجة", value: "\(captureManager.frameCount)")
+            metricRow("إطارات متروكة", value: "\(captureManager.droppedFrameCount)")
+            metricRow("حزم صوت التطبيق", value: "\(captureManager.audioPacketCount)")
+        }
+        .font(.footnote)
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func metricRow(_ title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .monospacedDigit()
+        }
     }
 }
 
