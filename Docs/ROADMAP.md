@@ -46,8 +46,10 @@
 - ⏳ Apple entitlement approval deferred
 - ⏳ Signed provisioning profile with CarPlay entitlement
 
-## Stage 7 — BMW X6 Test
-- Install signed build
-- Test wireless CarPlay connection
-- Verify app visibility and supported presentation
-- Record limitations and compatibility
+## 🟡 Stage 7 — BMW X6 Test
+- ✅ Add entitlement-free CarPlay UI preview
+- ✅ Add shareable diagnostics report
+- ✅ Add physical-test checklist and pass criteria
+- ⏳ Install entitlement-enabled signed build
+- ⏳ Test Wireless CarPlay on BMW X6 2025
+- ⏳ Record actual vehicle result
