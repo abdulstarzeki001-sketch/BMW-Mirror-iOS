@@ -2,6 +2,16 @@ import Foundation
 import Combine
 import UIKit
 
+extension Notification.Name {
+    static let bmwMirrorCarPlaySceneDidConnect = Notification.Name(
+        "BMWMirror.CarPlaySceneDidConnect"
+    )
+
+    static let bmwMirrorCarPlaySceneDidDisconnect = Notification.Name(
+        "BMWMirror.CarPlaySceneDidDisconnect"
+    )
+}
+
 @MainActor
 final class CarPlayManager: ObservableObject {
     @Published private(set) var isConnected = false
@@ -12,6 +22,7 @@ final class CarPlayManager: ObservableObject {
 
     init() {
         observeCarPlaySceneLifecycle()
+        observeAppActivation()
         refreshConnectionState()
     }
 
@@ -31,34 +42,34 @@ final class CarPlayManager: ObservableObject {
     private func observeCarPlaySceneLifecycle() {
         let center = NotificationCenter.default
 
-        center.publisher(for: UIScene.didConnectNotification)
-            .merge(with: center.publisher(for: UIScene.didDisconnectNotification))
+        center.publisher(for: .bmwMirrorCarPlaySceneDidConnect)
+            .merge(with: center.publisher(for: .bmwMirrorCarPlaySceneDidDisconnect))
             .receive(on: RunLoop.main)
             .sink { [weak self] notification in
-                self?.handleSceneLifecycleNotification(notification)
+                guard let self else { return }
+
+                if notification.name == .bmwMirrorCarPlaySceneDidConnect {
+                    self.applyConnectionState(
+                        true,
+                        eventText: "تم إنشاء مشهد CarPlay الخاص بـ BMW Mirror"
+                    )
+                } else {
+                    self.applyConnectionState(
+                        false,
+                        eventText: "تم فصل مشهد CarPlay الخاص بـ BMW Mirror"
+                    )
+                }
             }
             .store(in: &cancellables)
     }
 
-    private func handleSceneLifecycleNotification(_ notification: Notification) {
-        guard
-            let scene = notification.object as? UIScene,
-            scene.session.role == .carTemplateApplication
-        else {
-            return
-        }
-
-        if notification.name == UIScene.didConnectNotification {
-            applyConnectionState(
-                true,
-                eventText: "تم إنشاء مشهد CarPlay الخاص بـ BMW Mirror"
-            )
-        } else if notification.name == UIScene.didDisconnectNotification {
-            applyConnectionState(
-                false,
-                eventText: "تم فصل مشهد CarPlay الخاص بـ BMW Mirror"
-            )
-        }
+    private func observeAppActivation() {
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.refreshConnectionState()
+            }
+            .store(in: &cancellables)
     }
 
     private func applyConnectionState(_ connected: Bool, eventText: String) {
