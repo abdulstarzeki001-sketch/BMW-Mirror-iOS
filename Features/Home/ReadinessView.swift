@@ -40,11 +40,11 @@ struct ReadinessView: View {
             }
 
             Section("الخطوة التالية") {
-                Text("بعد موافقة Apple على entitlement المناسب، يتم ربط ملف entitlement الحقيقي بالتوقيع، ثم بناء نسخة موقعة وتجربتها على BMW X6 2025.")
+                Text("الخطوة البرمجية التالية هي بناء مسار AirPlay Video حقيقي. بعد ذلك يأتي Apple Developer + CarPlay Video entitlement، ثم الاختبار الفعلي على BMW X6 2025.")
                     .font(.subheadline)
             }
         }
-        .navigationTitle("Project Readiness")
+        .navigationTitle("جاهزية المشروع")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
