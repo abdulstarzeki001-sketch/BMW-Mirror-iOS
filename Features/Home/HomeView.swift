@@ -47,6 +47,27 @@ struct HomeView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
+                    NavigationLink {
+                        CarPlayPreviewView()
+                    } label: {
+                        Label("معاينة واجهة CarPlay", systemImage: "car.rear.waves.up")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
+                    ShareLink(
+                        item: DiagnosticsReport.make(
+                            carPlayManager: carPlayManager,
+                            captureManager: captureManager
+                        )
+                    ) {
+                        Label("مشاركة تقرير الفحص", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
                     Button {
                         carPlayManager.refreshConnectionState()
                     } label: {
