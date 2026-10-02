@@ -8,8 +8,8 @@
 2. ⏳ حالة اتصال CarPlay
 3. التقاط الشاشة داخل iPhone
 4. معالجة الفيديو والصوت
-5. CarPlay Simulator
-6. تجهيز Entitlements
+5. ✅ CarPlay scene / Simulator preparation
+6. ⏳ تجهيز Entitlements
 7. اختبار فعلي على BMW X6 2025
 
 > عرض المحتوى على CarPlay يعتمد على الصلاحيات التي تمنحها Apple وعلى قدرات السيارة. المشروع لا يعتمد على تجاوز قيود السلامة أثناء القيادة.
@@ -31,4 +31,4 @@
 - `Docs/`
 
 ## المرحلة الحالية
-**Stage 1 مكتملة. المرحلة التالية: Stage 2 — CarPlay Detection.**
+**Stage 1–5 مكتملة من ناحية البناء. المرحلة الحالية: Stage 6 — Entitlements.**
