@@ -37,13 +37,14 @@
 - Set a safe `CPListTemplate` root screen
 - Check in an explicit Info.plist with the CarPlay scene manifest
 - Prepare the project structure for CarPlay Simulator
-- Runtime CarPlay visibility remains gated by an approved entitlement
 
-## ⏳ Stage 6 — Entitlements
-- Determine the applicable CarPlay category for the intended experience
-- Prepare identifiers and entitlement file
-- Document Apple Developer Program requirements
-- Request the applicable entitlement only when the project is otherwise ready
+## 🟡 Stage 6 — Entitlements
+- ✅ Identify current candidate: `com.apple.developer.carplay-video`
+- ✅ Add an example entitlement file without breaking free signing
+- ✅ Document App ID / provisioning steps
+- ⏳ Apple Developer Program enrollment deferred
+- ⏳ Apple entitlement approval deferred
+- ⏳ Signed provisioning profile with CarPlay entitlement
 
 ## Stage 7 — BMW X6 Test
 - Install signed build
