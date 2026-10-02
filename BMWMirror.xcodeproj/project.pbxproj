@@ -24,6 +24,7 @@
 		B00000000000000000000005 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/AppConstants.swift; sourceTree = "<group>"; };
 		B00000000000000000000006 /* StatusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/StatusCard.swift; sourceTree = "<group>"; };
 		B00000000000000000000007 /* BMWMirror.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BMWMirror.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B00000000000000000000008 /* MediaPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Media/MediaPipeline.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
