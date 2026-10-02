@@ -10,12 +10,14 @@
 - Base folder structure
 - GitHub Actions simulator build validation
 
-## ⏳ Stage 2 — CarPlay Detection
-- Detect supported CarPlay scene/session events
-- Reflect connection state in UI
-- Add logs for connect/disconnect
+## ✅ Stage 2 — CarPlay Detection
+- Observe CarPlay scene connect/disconnect lifecycle
+- Detect `UISceneSession.Role.carTemplateApplication`
+- Reflect live connection state in the iPhone UI
+- Refresh state when the iPhone app becomes active
+- Manual refresh button and connection event text
 
-## Stage 3 — Screen Capture
+## ⏳ Stage 3 — Screen Capture
 - Integrate the appropriate iOS screen capture API
 - Start/stop capture
 - Preview captured frames inside the iPhone app
