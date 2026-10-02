@@ -15,6 +15,8 @@
 		A00000000000000000000006 /* StatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000006 /* StatusCard.swift */; };
 		A00000000000000000000007 /* MediaPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* MediaPipeline.swift */; };
 		A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* CarPlaySceneDelegate.swift */; };
+		A00000000000000000000009 /* CarPlayPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000011 /* CarPlayPreviewView.swift */; };
+		A00000000000000000000010 /* DiagnosticsReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* DiagnosticsReport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		B00000000000000000000008 /* MediaPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Media/MediaPipeline.swift; sourceTree = "<group>"; };
 		B00000000000000000000009 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/CarPlay/CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		B00000000000000000000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BMWMirrorApp/Info.plist; sourceTree = "<group>"; };
+		B00000000000000000000011 /* CarPlayPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/CarPlay/CarPlayPreviewView.swift; sourceTree = "<group>"; };
+		B00000000000000000000012 /* DiagnosticsReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Diagnostics/DiagnosticsReport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +57,8 @@
 				B00000000000000000000008 /* MediaPipeline.swift */,
 				B00000000000000000000009 /* CarPlaySceneDelegate.swift */,
 				B00000000000000000000010 /* Info.plist */,
+				B00000000000000000000011 /* CarPlayPreviewView.swift */,
+				B00000000000000000000012 /* DiagnosticsReport.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 				A00000000000000000000006 /* StatusCard.swift in Sources */,
 				A00000000000000000000007 /* MediaPipeline.swift in Sources */,
 				A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */,
+				A00000000000000000000009 /* CarPlayPreviewView.swift in Sources */,
+				A00000000000000000000010 /* DiagnosticsReport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
