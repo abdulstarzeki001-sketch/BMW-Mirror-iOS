@@ -8,7 +8,7 @@ struct CarPlayPreviewView: View {
                     .font(.title2.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text("هذه معاينة داخل iPhone فقط لاختبار شكل الواجهة قبل تفعيل CarPlay entitlement.")
+                Text("هذه معاينة داخل iPhone فقط. الواجهة الفعلية على CarPlay تعتمد على entitlement المناسب ودعم السيارة.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,15 +29,21 @@ struct CarPlayPreviewView: View {
                             .overlay(.white.opacity(0.18))
 
                         previewRow(
+                            title: "Full Display Capture",
+                            detail: "ScreenCaptureKit • iOS 27+",
+                            icon: "rectangle.on.rectangle"
+                        )
+
+                        previewRow(
                             title: "Media Pipeline",
                             detail: "30 FPS target • 1280px max edge",
                             icon: "waveform.circle.fill"
                         )
 
                         previewRow(
-                            title: "Screen Capture",
-                            detail: "Prepared on iPhone",
-                            icon: "rectangle.on.rectangle"
+                            title: "AirPlay Video Output",
+                            detail: "Pending",
+                            icon: "airplayvideo"
                         )
 
                         previewRow(
@@ -53,7 +59,8 @@ struct CarPlayPreviewView: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     Label("CarPlay Scene: جاهز", systemImage: "checkmark.circle.fill")
-                    Label("Media Pipeline: جاهز", systemImage: "checkmark.circle.fill")
+                    Label("Full Display Capture: جاهز على iOS 27+", systemImage: "checkmark.circle.fill")
+                    Label("AirPlay Video Output: غير منفذ بعد", systemImage: "exclamationmark.triangle.fill")
                     Label("Apple Entitlement: بانتظار الموافقة", systemImage: "clock.fill")
                     Label("BMW X6 Test: لم يبدأ بعد", systemImage: "car.circle")
                 }
