@@ -4,60 +4,53 @@
 - Buildable Xcode project
 - Shared scheme
 - SwiftUI app entry point
-- Home screen
-- CarPlay status placeholder
-- Screen capture status placeholder
-- Base folder structure
-- GitHub Actions simulator build validation
+- GitHub Actions build validation
 
-## ✅ Stage 2 — CarPlay Detection
+## ✅ Stage 2 — CarPlay App-Scene Detection
 - Observe CarPlay scene connect/disconnect lifecycle
 - Detect `UISceneSession.Role.carTemplateApplication`
-- Reflect live connection state in the iPhone UI
-- Refresh state when the iPhone app becomes active
-- Manual refresh button and connection event text
+- Report app-scene status without pretending it is global CarPlay connection status
 
-## ✅ Stage 3 — Screen Capture
-- Integrate ReplayKit capture for the iOS 17+ compatibility path
-- Start/stop capture from the app
-- Convert video sample buffers into preview frames
-- Show live frame preview, frame count, resolution, status, and errors
+## ✅ Stage 3 — Capture Foundation
+- ReplayKit compatibility path for in-app capture
+- Explicitly label ReplayKit as app-only capture
+- Add iOS 27+ ScreenCaptureKit full-display path
+- Add `screen-capture` background mode
 
 ## ✅ Stage 4 — Media Pipeline
-- Separate capture from media processing
-- Correct ReplayKit frame orientation
-- Throttle video to a 30 FPS target
-- Downscale long edge to 1280 px
-- Receive application-audio sample buffers
-- Track frame drops, actual FPS, processing latency, source/output size and orientation
+- Frame throttling
+- Orientation handling
+- 1280px transport preview
+- App/system audio sample metrics
+- Correct processed/throttled/failed frame accounting
 
-## ✅ Stage 5 — CarPlay Scene / Simulator Preparation
-- Add `CPTemplateApplicationScene` configuration
-- Add `CarPlaySceneDelegate`
-- Set a safe `CPListTemplate` root screen
-- Check in an explicit Info.plist with the CarPlay scene manifest
-- Prepare the project structure for CarPlay Simulator
+## ✅ Stage 5 — CarPlay Scene
+- `CPTemplateApplicationScene`
+- `CarPlaySceneDelegate`
+- Root `CPListTemplate`
+- Explicit Info.plist scene manifest
 
-## 🟡 Stage 6 — Entitlements
-- ✅ Identify current candidate: `com.apple.developer.carplay-video`
-- ✅ Add an example entitlement file without breaking free signing
-- ✅ Document App ID / provisioning steps
-- ⏳ Apple Developer Program enrollment deferred
-- ⏳ Apple entitlement approval deferred
-- ⏳ Signed provisioning profile with CarPlay entitlement
+## 🟡 Next — AirPlay Video Output
+- Build a real video playback/output path that supports AirPlay
+- Bridge captured/encoded content into a format AirPlay/CarPlay Video can play
+- Verify route selection and external playback behavior
+- Do not claim CarPlay mirroring until this path works
 
-## 🟡 Stage 7 — BMW X6 Test
-- ✅ Add entitlement-free CarPlay UI preview
-- ✅ Add shareable diagnostics report
-- ✅ Add physical-test checklist and pass criteria
-- ⏳ Install entitlement-enabled signed build
-- ⏳ Test Wireless CarPlay on BMW X6 2025
-- ⏳ Record actual vehicle result
+## 🟡 Stage 6 — CarPlay Video Entitlement
+- Candidate: `com.apple.developer.carplay-video`
+- Example entitlement file exists but is intentionally not attached
+- Apple Developer Program enrollment pending
+- Apple entitlement approval pending
+- Provisioning profile with entitlement pending
 
+## 🟡 Stage 7 — BMW X6 2025 Test
+- Diagnostics and test checklist are ready
+- Physical test waits for a working AirPlay Video path and signed entitlement-enabled build
+- Vehicle support for the official Video in Car path must be verified
 
 ## ✅ Stage 8 — Preflight & Readiness
-- Add in-app Project Readiness screen
-- Add repository preflight script
-- Add GitHub Actions preflight validation
-- Verify entitlement remains deferred until approval
-- Verify CarPlay scene/project structure before payment
+- Repository sanity checks
+- Plist validation
+- Xcode source-membership checks
+- CI simulator build
+- Honest readiness status for unresolved blockers
