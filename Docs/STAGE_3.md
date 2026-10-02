@@ -1,23 +1,22 @@
 # Stage 3 — Screen Capture
 
-Status: **Complete**
+Status: **Complete as capture foundation.**
 
 ## Implemented
-- Start/stop live screen capture using ReplayKit.
-- Receive video frames as `CMSampleBuffer`.
-- Convert captured pixel buffers to `CGImage`.
-- Show a live preview inside BMW Mirror.
-- Show frame count and captured resolution.
-- Show capture status and runtime errors.
-- Microphone capture is disabled for this first proof-of-capture stage.
+- ReplayKit compatibility capture for BMW Mirror's own app content.
+- Start/stop capture with transition-state protection.
+- Live frame preview, status and error reporting.
+- iOS 27+ full-display capture path using ScreenCaptureKit.
+- System content picker for the full-display path.
+- `UIBackgroundModes = screen-capture` for the iOS 27+ full-display path.
 
-## Compatibility decision
-The project currently targets iOS 17+, so Stage 3 uses ReplayKit for the compatibility path.
+## Important distinction
+The ReplayKit path is **not** full iPhone screen mirroring across arbitrary apps. It is kept as an older compatibility/in-app capture path.
 
-Apple's newer ScreenCaptureKit replaces ReplayKit for screen streaming and mirroring on newer operating systems. The iOS full-display ScreenCaptureKit sample requires iOS 27 or later, so migration can be added later without dropping compatibility with older iOS versions.
+The full-display path is implemented separately with ScreenCaptureKit and is available only when the SDK/runtime supports the iOS 27+ APIs.
 
-## Scope
-This stage proves that BMW Mirror can receive live screen frames while its app capture session is active. It does **not** yet send those frames to CarPlay and it does not claim unrestricted background capture of every app.
+## Still missing
+Captured full-display frames are not yet sent to CarPlay. A real AirPlay Video output/playback layer is still required before the project can test the official CarPlay Video path.
 
 ## Next
-Stage 4 — Media Pipeline: frame throttling, orientation, audio, latency and a transport-ready stream.
+Media processing, then AirPlay Video output.
