@@ -43,6 +43,10 @@
             </array>
         </dict>
     </dict>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>screen-capture</string>
+    </array>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>UILaunchScreen</key>
