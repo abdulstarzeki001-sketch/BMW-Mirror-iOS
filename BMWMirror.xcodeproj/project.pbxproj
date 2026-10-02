@@ -19,6 +19,8 @@
 		A00000000000000000000010 /* DiagnosticsReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* DiagnosticsReport.swift */; };
 		A00000000000000000000011 /* ProjectReadiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000013 /* ProjectReadiness.swift */; };
 		A00000000000000000000012 /* ReadinessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000014 /* ReadinessView.swift */; };
+		A00000000000000000000013 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000015 /* CaptureMode.swift */; };
+		A00000000000000000000014 /* FullDisplayCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* FullDisplayCaptureController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		B00000000000000000000012 /* DiagnosticsReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Diagnostics/DiagnosticsReport.swift; sourceTree = "<group>"; };
 		B00000000000000000000013 /* ProjectReadiness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ProjectReadiness.swift; sourceTree = "<group>"; };
 		B00000000000000000000014 /* ReadinessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Home/ReadinessView.swift; sourceTree = "<group>"; };
+		B00000000000000000000015 /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/ScreenCapture/CaptureMode.swift; sourceTree = "<group>"; };
+		B00000000000000000000016 /* FullDisplayCaptureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/ScreenCapture/FullDisplayCaptureController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +69,8 @@
 				B00000000000000000000012 /* DiagnosticsReport.swift */,
 				B00000000000000000000013 /* ProjectReadiness.swift */,
 				B00000000000000000000014 /* ReadinessView.swift */,
+				B00000000000000000000015 /* CaptureMode.swift */,
+				B00000000000000000000016 /* FullDisplayCaptureController.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,6 +163,8 @@
 				A00000000000000000000010 /* DiagnosticsReport.swift in Sources */,
 				A00000000000000000000011 /* ProjectReadiness.swift in Sources */,
 				A00000000000000000000012 /* ReadinessView.swift in Sources */,
+				A00000000000000000000013 /* CaptureMode.swift in Sources */,
+				A00000000000000000000014 /* FullDisplayCaptureController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
