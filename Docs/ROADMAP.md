@@ -27,20 +27,23 @@
 - Separate capture from media processing
 - Correct ReplayKit frame orientation
 - Throttle video to a 30 FPS target
-- Downscale long edge to 1280 px for a lighter transport stream
+- Downscale long edge to 1280 px
 - Receive application-audio sample buffers
 - Track frame drops, actual FPS, processing latency, source/output size and orientation
-- Expose a transport-friendly processed-frame boundary for the next CarPlay stage
 
-## ⏳ Stage 5 — CarPlay Simulator
-- Add supported CarPlay scene configuration
-- Test behavior in Apple CarPlay Simulator
-- Verify supported template/scene behavior
+## ✅ Stage 5 — CarPlay Scene / Simulator Preparation
+- Add `CPTemplateApplicationScene` configuration
+- Add `CarPlaySceneDelegate`
+- Set a safe `CPListTemplate` root screen
+- Check in an explicit Info.plist with the CarPlay scene manifest
+- Prepare the project structure for CarPlay Simulator
+- Runtime CarPlay visibility remains gated by an approved entitlement
 
-## Stage 6 — Entitlements
-- Prepare required identifiers and capability configuration
+## ⏳ Stage 6 — Entitlements
+- Determine the applicable CarPlay category for the intended experience
+- Prepare identifiers and entitlement file
 - Document Apple Developer Program requirements
-- Request applicable CarPlay entitlement
+- Request the applicable entitlement only when the project is otherwise ready
 
 ## Stage 7 — BMW X6 Test
 - Install signed build
