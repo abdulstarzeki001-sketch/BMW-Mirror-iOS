@@ -56,6 +56,15 @@ struct HomeView: View {
                     }
                     .buttonStyle(.bordered)
 
+                    NavigationLink {
+                        ReadinessView()
+                    } label: {
+                        Label("Project Readiness", systemImage: "checklist")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
                     ShareLink(
                         item: DiagnosticsReport.make(
                             carPlayManager: carPlayManager,
