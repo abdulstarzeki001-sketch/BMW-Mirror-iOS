@@ -11,16 +11,26 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     StatusCard(
-                        title: "CarPlay",
+                        title: "BMW Mirror على CarPlay",
                         value: carPlayManager.statusText,
                         systemImage: carPlayManager.isConnected ? "car.side.fill" : "car.side"
                     )
 
                     StatusCard(
-                        title: "Media Pipeline",
+                        title: "Screen Capture",
                         value: captureManager.statusText,
                         systemImage: captureManager.isCapturing ? "waveform.circle.fill" : "waveform.circle"
                     )
+
+                    captureModePicker
+
+                    Text(captureManager.modeDetailText)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(.thinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                     capturePreview
                     pipelineMetrics
@@ -39,13 +49,14 @@ struct HomeView: View {
                         captureManager.toggleCapture()
                     } label: {
                         Label(
-                            captureManager.isCapturing ? "إيقاف الالتقاط" : "بدء التقاط الشاشة",
-                            systemImage: captureManager.isCapturing ? "stop.fill" : "record.circle"
+                            captureButtonTitle,
+                            systemImage: captureButtonIcon
                         )
                         .frame(maxWidth: .infinity)
                         .padding()
                     }
                     .buttonStyle(.borderedProminent)
+                    .disabled(captureManager.isBusy)
 
                     NavigationLink {
                         CarPlayPreviewView()
@@ -59,7 +70,7 @@ struct HomeView: View {
                     NavigationLink {
                         ReadinessView()
                     } label: {
-                        Label("Project Readiness", systemImage: "checklist")
+                        Label("جاهزية المشروع", systemImage: "checklist")
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                     }
@@ -80,7 +91,7 @@ struct HomeView: View {
                     Button {
                         carPlayManager.refreshConnectionState()
                     } label: {
-                        Label("تحديث حالة CarPlay", systemImage: "arrow.clockwise")
+                        Label("تحديث مشهد CarPlay", systemImage: "arrow.clockwise")
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
                     }
@@ -102,6 +113,40 @@ struct HomeView: View {
         }
     }
 
+    private var captureModePicker: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("وضع الالتقاط")
+                .font(.headline)
+
+            Picker("وضع الالتقاط", selection: $captureManager.captureMode) {
+                ForEach(CaptureMode.allCases) { mode in
+                    Text(mode.title)
+                        .tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .disabled(captureManager.isCapturing || captureManager.isBusy)
+
+            HStack {
+                Text(captureManager.captureMode.detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                if captureManager.captureMode == .fullDisplay &&
+                    !captureManager.supportsFullDisplayCapture {
+                    Text("غير متاح")
+                        .font(.caption.bold())
+                        .foregroundStyle(.orange)
+                }
+            }
+        }
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
     @ViewBuilder
     private var capturePreview: some View {
         ZStack {
@@ -117,9 +162,9 @@ struct HomeView: View {
                 VStack(spacing: 10) {
                     Image(systemName: "iphone.gen3")
                         .font(.system(size: 34))
-                    Text("معاينة Media Pipeline")
+                    Text("معاينة الالتقاط")
                         .font(.headline)
-                    Text("ابدأ الالتقاط لاختبار الفيديو والصوت والاتجاه")
+                    Text("ابدأ الالتقاط لعرض الإطارات هنا")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -139,13 +184,30 @@ struct HomeView: View {
             metricRow("حجم الإخراج", value: captureManager.frameSizeText)
             metricRow("اتجاه الفيديو", value: captureManager.orientationText)
             metricRow("إطارات معالجة", value: "\(captureManager.frameCount)")
-            metricRow("إطارات متروكة", value: "\(captureManager.droppedFrameCount)")
-            metricRow("حزم صوت التطبيق", value: "\(captureManager.audioPacketCount)")
+            metricRow("إطارات throttled", value: "\(captureManager.droppedFrameCount)")
+            metricRow("إطارات فاشلة", value: "\(captureManager.failedFrameCount)")
+            metricRow("حزم صوت", value: "\(captureManager.audioPacketCount)")
         }
         .font(.footnote)
         .padding()
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var captureButtonTitle: String {
+        if captureManager.isBusy {
+            return "جارٍ التنفيذ…"
+        }
+
+        return captureManager.isCapturing ? "إيقاف الالتقاط" : "بدء الالتقاط"
+    }
+
+    private var captureButtonIcon: String {
+        if captureManager.isBusy {
+            return "hourglass"
+        }
+
+        return captureManager.isCapturing ? "stop.fill" : "record.circle"
     }
 
     private func metricRow(_ title: String, value: String) -> some View {
