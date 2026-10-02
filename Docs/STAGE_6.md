@@ -1,21 +1,26 @@
 # Stage 6 — Entitlement Preparation
 
-Status: **Free preparation complete; Apple approval/payment intentionally deferred.**
+Status: **Preparation complete; activation intentionally deferred.**
 
-## Completed without a paid membership
-- Selected the current official CarPlay video entitlement candidate.
-- Added `BMWMirror.entitlements.example`.
-- Kept the entitlement disconnected from signing so free builds are not broken.
-- Documented the exact bundle ID and activation steps.
-- Documented the boundary between CarPlay video support and unrestricted screen mirroring.
+## Completed
+- Candidate entitlement documented: `com.apple.developer.carplay-video`.
+- `BMWMirror.entitlements.example` added.
+- The entitlement is intentionally not attached to signing.
+- Bundle ID and provisioning steps are documented.
 
-## Pending external step
-The next real CarPlay step requires:
-- Apple Developer Program membership.
-- Apple approval for the applicable CarPlay entitlement.
-- A provisioning profile containing the approved entitlement.
+## Engineering blocker before requesting it
+The project still needs a working **AirPlay Video output/playback path**.
 
-No payment has been made or required by these repository changes.
+The CarPlay Video entitlement is not a generic permission to draw arbitrary iPhone UI on the CarPlay display. Requesting it before the app has a truthful video/AirPlay implementation would put the project in the wrong order.
 
-## After approval
-Attach the real entitlement file to the Xcode target, rebuild, run the CarPlay Simulator, then test in the BMW X6 2025.
+## Correct order
+1. Complete AirPlay-capable video output.
+2. Test the video path without CarPlay entitlement where possible.
+3. Enroll in Apple Developer Program.
+4. Request the applicable CarPlay Video entitlement.
+5. After approval, create a provisioning profile containing the entitlement.
+6. Attach the real entitlement file to the Xcode target.
+7. Build and verify signed entitlements.
+8. Test CarPlay/vehicle support.
+
+No payment is needed for the repository work completed so far.
