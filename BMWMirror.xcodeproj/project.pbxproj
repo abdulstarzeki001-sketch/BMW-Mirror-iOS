@@ -14,6 +14,7 @@
 		A00000000000000000000005 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* AppConstants.swift */; };
 		A00000000000000000000006 /* StatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000006 /* StatusCard.swift */; };
 		A00000000000000000000007 /* MediaPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* MediaPipeline.swift */; };
+		A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* CarPlaySceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,8 @@
 		B00000000000000000000006 /* StatusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/StatusCard.swift; sourceTree = "<group>"; };
 		B00000000000000000000007 /* BMWMirror.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BMWMirror.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00000000000000000000008 /* MediaPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Media/MediaPipeline.swift; sourceTree = "<group>"; };
+		B00000000000000000000009 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/CarPlay/CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		B00000000000000000000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BMWMirrorApp/Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +51,8 @@
 				B00000000000000000000005 /* AppConstants.swift */,
 				B00000000000000000000006 /* StatusCard.swift */,
 				B00000000000000000000008 /* MediaPipeline.swift */,
+				B00000000000000000000009 /* CarPlaySceneDelegate.swift */,
+				B00000000000000000000010 /* Info.plist */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -135,6 +140,7 @@
 				A00000000000000000000005 /* AppConstants.swift in Sources */,
 				A00000000000000000000006 /* StatusCard.swift in Sources */,
 				A00000000000000000000007 /* MediaPipeline.swift in Sources */,
+				A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,7 +185,8 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BMWMirrorApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "BMW Mirror";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -201,7 +208,8 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BMWMirrorApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "BMW Mirror";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
