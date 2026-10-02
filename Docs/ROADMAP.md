@@ -17,16 +17,19 @@
 - Refresh state when the iPhone app becomes active
 - Manual refresh button and connection event text
 
-## ⏳ Stage 3 — Screen Capture
-- Integrate the appropriate iOS screen capture API
-- Start/stop capture
-- Preview captured frames inside the iPhone app
+## ✅ Stage 3 — Screen Capture
+- Integrate ReplayKit capture for the iOS 17+ compatibility path
+- Start/stop capture from the app
+- Convert video sample buffers into preview frames
+- Show live frame preview, frame count, resolution, status, and errors
+- Keep microphone disabled for the first capture test
 
-## Stage 4 — Media Pipeline
-- Frame pipeline
+## ⏳ Stage 4 — Media Pipeline
+- Separate raw capture frames from UI preview
 - Orientation handling
 - Audio path
-- Latency measurements
+- Frame throttling / latency measurements
+- Prepare a transport-friendly video pipeline
 
 ## Stage 5 — CarPlay Simulator
 - Add supported CarPlay scene configuration
