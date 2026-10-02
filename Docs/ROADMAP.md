@@ -1,14 +1,17 @@
 # BMW Mirror Roadmap
 
-## Stage 1 — Project Skeleton
+## ✅ Stage 1 — Project Skeleton
+- Buildable Xcode project
+- Shared scheme
 - SwiftUI app entry point
 - Home screen
 - CarPlay status placeholder
 - Screen capture status placeholder
 - Base folder structure
+- GitHub Actions simulator build validation
 
-## Stage 2 — CarPlay Detection
-- Detect CarPlay scene/session
+## ⏳ Stage 2 — CarPlay Detection
+- Detect supported CarPlay scene/session events
 - Reflect connection state in UI
 - Add logs for connect/disconnect
 
@@ -24,8 +27,8 @@
 - Latency measurements
 
 ## Stage 5 — CarPlay Simulator
-- Add CarPlay scene configuration
-- Test the app in Apple CarPlay Simulator
+- Add supported CarPlay scene configuration
+- Test behavior in Apple CarPlay Simulator
 - Verify supported template/scene behavior
 
 ## Stage 6 — Entitlements
