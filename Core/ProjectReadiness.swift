@@ -13,19 +13,25 @@ enum ProjectReadiness {
             .init(
                 id: "xcode-project",
                 title: "Xcode Project",
-                detail: "BMWMirror.xcodeproj موجود ومجهز للبناء",
+                detail: "BMWMirror.xcodeproj يبني بنجاح في CI",
                 isReady: true
             ),
             .init(
-                id: "legacy-capture",
+                id: "legacy-inapp-capture",
                 title: "ReplayKit In-App Capture",
-                detail: "جاهز كمسار توافق، لكنه لا يلتقط تطبيقات iPhone الأخرى",
+                detail: "جاهز كمسار توافق داخل BMW Mirror نفسه",
                 isReady: true
             ),
             .init(
-                id: "full-display-capture",
-                title: "Full Display Capture",
-                detail: "ScreenCaptureKit path موجود؛ التشغيل الكامل يحتاج iOS 27+",
+                id: "legacy-full-display-broadcast",
+                title: "Legacy Full Display (iOS 17–26)",
+                detail: "يحتاج ReplayKit Broadcast Upload Extension + نقل الإطارات إلى التطبيق",
+                isReady: false
+            ),
+            .init(
+                id: "modern-full-display-capture",
+                title: "Full Display Capture (iOS 27+)",
+                detail: "ScreenCaptureKit path موجود ويستخدم system content picker",
                 isReady: true
             ),
             .init(
