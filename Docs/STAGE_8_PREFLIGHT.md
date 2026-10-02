@@ -1,28 +1,36 @@
 # Stage 8 — Preflight & Readiness
 
-Status: **Complete**
+Status: **Complete.**
 
 ## Added
-- A Project Readiness screen in the iPhone app.
-- A readiness model that separates completed work from external Apple/vehicle dependencies.
-- `Scripts/preflight.sh` for fast repository sanity checks.
-- GitHub Actions workflow `Project Preflight`.
+- In-app Project Readiness screen.
+- `Scripts/preflight.sh`.
+- GitHub Actions Project Preflight workflow.
+- Simulator build workflow.
 
-## Preflight checks
-- Required project files exist.
-- CarPlay scene role exists in Info.plist.
-- CarPlay scene delegate is configured.
-- The deferred CarPlay video entitlement example exists.
-- The real CarPlay entitlement is not attached prematurely.
-- Key Swift files are present in the Xcode Sources phase.
-- Info.plist parses correctly and contains the expected CarPlay scene class.
+## Preflight now checks
+- Required project files.
+- CarPlay scene role and scene delegate.
+- `screen-capture` background mode.
+- Deferred CarPlay Video entitlement example.
+- No premature real entitlement attachment.
+- Xcode source membership for core capture files.
+- ReplayKit and ScreenCaptureKit wiring.
+- Explicit AirPlay Video blocker in readiness.
+- Plist parsing and key values.
 
-## Purpose
-This stage reduces the chance of paying for the Apple Developer Program and then discovering a simple project-structure mistake.
+## CI verification
+After the audit:
+- Project Preflight passed.
+- The first simulator build exposed a real compile error in the old CarPlay scene-notification code.
+- That code was replaced with explicit notifications posted by `CarPlaySceneDelegate`.
+- The subsequent iOS Simulator build passed.
 
 ## Remaining blockers
-Only external/runtime items remain:
-1. Apple Developer Program enrollment.
-2. Apple approval for the applicable CarPlay entitlement.
-3. Provisioning/signing with the approved entitlement.
-4. Real BMW X6 2025 testing.
+Not all remaining work is external. The current order is:
+
+1. **Internal:** implement AirPlay Video output/playback.
+2. **External:** Apple Developer Program enrollment.
+3. **External:** Apple approval for the applicable CarPlay entitlement.
+4. **External/runtime:** entitlement-enabled provisioning/signing.
+5. **Runtime:** verify BMW X6 2025 support and perform the physical test.
