@@ -4,43 +4,54 @@
 
 ## الحالة الحالية
 
-- ✅ مشروع SwiftUI/Xcode
+- ✅ مشروع SwiftUI/Xcode — **Build ناجح في CI**
 - ✅ اكتشاف مشهد CarPlay الخاص بالتطبيق
-- ✅ ReplayKit كمسار توافق لالتقاط **محتوى التطبيق نفسه**
-- ✅ ScreenCaptureKit full-display path لـ **iOS 27+**
+- ✅ ReplayKit لالتقاط محتوى BMW Mirror نفسه
+- 🟡 iOS 17–26: الالتقاط الكامل يحتاج **ReplayKit Broadcast Upload Extension** ولم يُنفذ بعد
+- ✅ iOS 27+: ScreenCaptureKit full-display path موجود
 - ✅ Media Pipeline + FPS/latency/diagnostics
 - ✅ CarPlay template scene
 - 🟡 **AirPlay Video output غير منفذ بعد**
 - 🟡 CarPlay Video entitlement غير مفعّل
 - 🟡 اختبار BMW X6 2025 لم يتم بعد
 
-> مهم: ReplayKit الموجود في المشروع ليس Screen Mirroring كامل لكل تطبيقات iPhone. الالتقاط الكامل الرسمي موجود عبر ScreenCaptureKit على iOS 27+، لكن إرسال هذا الالتقاط إلى CarPlay ما زال يحتاج طبقة AirPlay Video فعلية ثم entitlement المناسب ودعم السيارة.
+> مهم: `RPScreenRecorder.startCapture` ليس Screen Mirroring كامل لكل تطبيقات iPhone. للأنظمة الأقدم يمكن استخدام ReplayKit Broadcast Upload Extension الذي يستقبل video/audio sample buffers أثناء البث، لكنه أصبح مسارًا قديمًا واستبدلته Apple بـ ScreenCaptureKit في الأنظمة الأحدث.
 
-## الهدف التقني
+## المسار المستهدف
 
-المسار المستهدف:
+### iOS 27+
 
 ```text
 iPhone full display
     ↓
-ScreenCaptureKit (iOS 27+)
+ScreenCaptureKit
     ↓
 Media Pipeline
     ↓
-AirPlay Video output   ← المرحلة البرمجية التالية
+AirPlay Video output   ← blocker الحالي
     ↓
-CarPlay Video App entitlement
+CarPlay Video entitlement
     ↓
 Supported vehicle / BMW test
 ```
 
+### iOS 17–26 compatibility
+
+```text
+System Broadcast Picker
+    ↓
+ReplayKit Broadcast Upload Extension
+    ↓
+Frame transport to BMW Mirror
+    ↓
+Media / AirPlay Video output
+    ↓
+CarPlay / BMW test
+```
+
 ## فتح المشروع
 
-افتح:
-
-`BMWMirror.xcodeproj`
-
-ثم اختر iPhone Simulator واضغط Run.
+افتح `BMWMirror.xcodeproj`، اختر iPhone Simulator ثم Run.
 
 ## Bundle ID
 
@@ -62,8 +73,6 @@ Supported vehicle / BMW test
 
 ## قبل الدفع
 
-شغّل:
+شغّل `bash Scripts/preflight.sh`.
 
-`bash Scripts/preflight.sh`
-
-ولا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل أن توافق Apple على entitlement المناسب.
+لا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل موافقة Apple، ولا تعتبر المشروع جاهزًا للسيارة قبل نجاح AirPlay Video output.
