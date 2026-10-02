@@ -6,7 +6,7 @@ import UIKit
 final class CarPlayManager: ObservableObject {
     @Published private(set) var isConnected = false
     @Published private(set) var statusText = "غير متصل"
-    @Published private(set) var lastEventText = "بانتظار اتصال CarPlay"
+    @Published private(set) var lastEventText = "بانتظار إنشاء مشهد CarPlay الخاص بالتطبيق"
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -22,7 +22,9 @@ final class CarPlayManager: ObservableObject {
 
         applyConnectionState(
             connected,
-            eventText: connected ? "تم العثور على جلسة CarPlay نشطة" : "لا توجد جلسة CarPlay نشطة"
+            eventText: connected
+                ? "يوجد مشهد CarPlay نشط لـ BMW Mirror"
+                : "لا يوجد مشهد CarPlay نشط لـ BMW Mirror"
         )
     }
 
@@ -47,15 +49,21 @@ final class CarPlayManager: ObservableObject {
         }
 
         if notification.name == UIScene.didConnectNotification {
-            applyConnectionState(true, eventText: "تم اتصال جلسة CarPlay")
+            applyConnectionState(
+                true,
+                eventText: "تم إنشاء مشهد CarPlay الخاص بـ BMW Mirror"
+            )
         } else if notification.name == UIScene.didDisconnectNotification {
-            applyConnectionState(false, eventText: "تم فصل جلسة CarPlay")
+            applyConnectionState(
+                false,
+                eventText: "تم فصل مشهد CarPlay الخاص بـ BMW Mirror"
+            )
         }
     }
 
     private func applyConnectionState(_ connected: Bool, eventText: String) {
         isConnected = connected
-        statusText = connected ? "متصل" : "غير متصل"
+        statusText = connected ? "المشهد متصل" : "المشهد غير متصل"
         lastEventText = eventText
     }
 }
