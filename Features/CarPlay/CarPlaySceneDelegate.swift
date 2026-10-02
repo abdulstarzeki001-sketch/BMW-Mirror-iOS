@@ -11,17 +11,23 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     ) {
         self.interfaceController = interfaceController
 
+        let captureItem = CPListItem(
+            text: "Full Display Capture",
+            detailText: "ScreenCaptureKit • iOS 27+"
+        )
+        captureItem.isEnabled = false
+
         let pipelineItem = CPListItem(
             text: "Media Pipeline",
             detailText: "30 FPS target • 1280px max edge"
         )
         pipelineItem.isEnabled = false
 
-        let captureItem = CPListItem(
-            text: "Screen Capture",
-            detailText: "Prepared on iPhone"
+        let airPlayItem = CPListItem(
+            text: "AirPlay Video Output",
+            detailText: "Pending implementation"
         )
-        captureItem.isEnabled = false
+        airPlayItem.isEnabled = false
 
         let vehicleItem = CPListItem(
             text: "Target Vehicle",
@@ -30,7 +36,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         vehicleItem.isEnabled = false
 
         let statusSection = CPListSection(
-            items: [pipelineItem, captureItem, vehicleItem],
+            items: [captureItem, pipelineItem, airPlayItem, vehicleItem],
             header: "BMW Mirror",
             sectionIndexTitle: nil
         )
