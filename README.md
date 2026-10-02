@@ -1,35 +1,69 @@
 # BMW Mirror iOS
 
-تطبيق iPhone تجريبي يهدف إلى اختبار مشاركة/عرض المحتوى على شاشة BMW عبر CarPlay ضمن القيود الرسمية لنظام iOS.
+تطبيق تجريبي لـ iPhone لاختبار التقاط الشاشة وتجهيز مسار عرض متوافق مع CarPlay ضمن APIs وصلاحيات Apple الرسمية.
 
-## الهدف
-بناء المشروع على مراحل واضحة:
-1. ✅ هيكل تطبيق SwiftUI ومشروع Xcode قابل للبناء
-2. ⏳ حالة اتصال CarPlay
-3. التقاط الشاشة داخل iPhone
-4. معالجة الفيديو والصوت
-5. ✅ CarPlay scene / Simulator preparation
-6. ⏳ تجهيز Entitlements
-7. 🟡 تجهيز واختبار BMW X6 2025
-8. ✅ Preflight & Project Readiness
+## الحالة الحالية
 
-> عرض المحتوى على CarPlay يعتمد على الصلاحيات التي تمنحها Apple وعلى قدرات السيارة. المشروع لا يعتمد على تجاوز قيود السلامة أثناء القيادة.
+- ✅ مشروع SwiftUI/Xcode
+- ✅ اكتشاف مشهد CarPlay الخاص بالتطبيق
+- ✅ ReplayKit كمسار توافق لالتقاط **محتوى التطبيق نفسه**
+- ✅ ScreenCaptureKit full-display path لـ **iOS 27+**
+- ✅ Media Pipeline + FPS/latency/diagnostics
+- ✅ CarPlay template scene
+- 🟡 **AirPlay Video output غير منفذ بعد**
+- 🟡 CarPlay Video entitlement غير مفعّل
+- 🟡 اختبار BMW X6 2025 لم يتم بعد
+
+> مهم: ReplayKit الموجود في المشروع ليس Screen Mirroring كامل لكل تطبيقات iPhone. الالتقاط الكامل الرسمي موجود عبر ScreenCaptureKit على iOS 27+، لكن إرسال هذا الالتقاط إلى CarPlay ما زال يحتاج طبقة AirPlay Video فعلية ثم entitlement المناسب ودعم السيارة.
+
+## الهدف التقني
+
+المسار المستهدف:
+
+```text
+iPhone full display
+    ↓
+ScreenCaptureKit (iOS 27+)
+    ↓
+Media Pipeline
+    ↓
+AirPlay Video output   ← المرحلة البرمجية التالية
+    ↓
+CarPlay Video App entitlement
+    ↓
+Supported vehicle / BMW test
+```
 
 ## فتح المشروع
+
 افتح:
+
 `BMWMirror.xcodeproj`
 
 ثم اختر iPhone Simulator واضغط Run.
 
+## Bundle ID
+
+`com.abdulstar.bmwmirror`
+
 ## البنية
+
 - `BMWMirror.xcodeproj/`
 - `BMWMirrorApp/`
 - `Core/`
 - `Features/Home/`
 - `Features/ScreenCapture/`
+- `Features/Media/`
 - `Features/CarPlay/`
+- `Features/Diagnostics/`
 - `UI/`
+- `Scripts/`
 - `Docs/`
 
-## المرحلة الحالية
-**تم إنجاز البناء المجاني + فحوص Preflight. المتبقي خارجي فقط: اشتراك Apple Developer، موافقة entitlement، التوقيع، ثم الاختبار الفعلي على BMW.**
+## قبل الدفع
+
+شغّل:
+
+`bash Scripts/preflight.sh`
+
+ولا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل أن توافق Apple على entitlement المناسب.
