@@ -53,3 +53,11 @@
 - ⏳ Install entitlement-enabled signed build
 - ⏳ Test Wireless CarPlay on BMW X6 2025
 - ⏳ Record actual vehicle result
+
+
+## ✅ Stage 8 — Preflight & Readiness
+- Add in-app Project Readiness screen
+- Add repository preflight script
+- Add GitHub Actions preflight validation
+- Verify entitlement remains deferred until approval
+- Verify CarPlay scene/project structure before payment
