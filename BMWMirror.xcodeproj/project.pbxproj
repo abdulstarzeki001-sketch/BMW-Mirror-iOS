@@ -17,6 +17,8 @@
 		A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* CarPlaySceneDelegate.swift */; };
 		A00000000000000000000009 /* CarPlayPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000011 /* CarPlayPreviewView.swift */; };
 		A00000000000000000000010 /* DiagnosticsReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* DiagnosticsReport.swift */; };
+		A00000000000000000000011 /* ProjectReadiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000013 /* ProjectReadiness.swift */; };
+		A00000000000000000000012 /* ReadinessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000014 /* ReadinessView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		B00000000000000000000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BMWMirrorApp/Info.plist; sourceTree = "<group>"; };
 		B00000000000000000000011 /* CarPlayPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/CarPlay/CarPlayPreviewView.swift; sourceTree = "<group>"; };
 		B00000000000000000000012 /* DiagnosticsReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Diagnostics/DiagnosticsReport.swift; sourceTree = "<group>"; };
+		B00000000000000000000013 /* ProjectReadiness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ProjectReadiness.swift; sourceTree = "<group>"; };
+		B00000000000000000000014 /* ReadinessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Home/ReadinessView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +63,8 @@
 				B00000000000000000000010 /* Info.plist */,
 				B00000000000000000000011 /* CarPlayPreviewView.swift */,
 				B00000000000000000000012 /* DiagnosticsReport.swift */,
+				B00000000000000000000013 /* ProjectReadiness.swift */,
+				B00000000000000000000014 /* ReadinessView.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -149,6 +155,8 @@
 				A00000000000000000000008 /* CarPlaySceneDelegate.swift in Sources */,
 				A00000000000000000000009 /* CarPlayPreviewView.swift in Sources */,
 				A00000000000000000000010 /* DiagnosticsReport.swift in Sources */,
+				A00000000000000000000011 /* ProjectReadiness.swift in Sources */,
+				A00000000000000000000012 /* ReadinessView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
