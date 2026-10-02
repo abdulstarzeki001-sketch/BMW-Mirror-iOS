@@ -1,39 +1,37 @@
-# Stage 7 — BMW X6 Test Preparation
+# Stage 7 — BMW X6 2025 Test Preparation
 
-Status: **Preparation complete; physical vehicle test pending.**
+Status: **Test tooling ready; physical test blocked by AirPlay output and entitlement.**
 
-## Added before the BMW test
-- Entitlement-free CarPlay UI preview inside the iPhone app.
-- A shareable diagnostics report containing:
-  - iOS/device information
-  - CarPlay connection state
-  - capture state
-  - target/actual FPS
-  - processing latency
-  - source/output resolution
-  - orientation
-  - processed/dropped frames
-  - application-audio packet count
-- A fixed physical-test checklist.
+## Already prepared
+- In-app CarPlay UI preview.
+- Shareable diagnostics report.
+- Capture mode and full-display-support reporting.
+- FPS, latency, processed/throttled/failed frame metrics.
+- BMW physical-test checklist.
+
+## Prerequisites before the physical test
+1. Complete a real AirPlay Video output/playback path.
+2. Obtain the applicable Apple CarPlay entitlement.
+3. Create a signed provisioning profile containing that entitlement.
+4. Install the signed build on the iPhone.
+5. Verify that the specific BMW X6 2025 head unit supports Apple's official Video in Car path.
 
 ## Physical test checklist
-1. Build a signed app after the applicable CarPlay entitlement is approved.
-2. Install the signed build on the iPhone.
-3. Confirm normal Wireless CarPlay works with the BMW X6 2025.
-4. Open BMW Mirror on iPhone.
-5. Check that the CarPlay scene is created.
-6. Verify BMW Mirror appears in the permitted CarPlay interface.
-7. Start the media pipeline while parked.
-8. Record FPS, latency, frame drops and audio packet activity.
-9. Use **مشاركة تقرير الفحص** and save/share the generated report.
-10. Record whether the vehicle accepts the intended video presentation path.
+1. Confirm normal Wireless CarPlay works.
+2. Open BMW Mirror on iPhone.
+3. Confirm BMW Mirror's CarPlay app scene is created.
+4. Verify the permitted CarPlay interface appears.
+5. With the vehicle parked, test the supported video route.
+6. Record route availability, FPS, latency, throttled/failed frames and audio activity.
+7. Export **مشاركة تقرير الفحص**.
+8. Confirm what happens when video playback becomes unavailable, including vehicle-motion restrictions.
 
 ## Pass criteria
-- CarPlay scene connects.
-- No signing/entitlement error.
-- UI is visible through an Apple-permitted CarPlay surface.
+- Valid signed entitlement.
+- BMW Mirror CarPlay scene connects.
+- The vehicle exposes the supported Video in Car route.
+- The AirPlay/video path actually renders on the allowed vehicle display.
 - Media pipeline remains stable.
-- No unsafe video presentation while the vehicle is moving.
+- Video is not presented where the vehicle/CarPlay says playback is unavailable.
 
-## Pending
-The actual BMW result cannot be recorded until the signed entitlement-enabled build is installed and tested in the vehicle.
+Until those conditions are met, the project should not be described as proven BMW screen mirroring.
