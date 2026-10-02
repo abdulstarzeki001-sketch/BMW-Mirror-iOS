@@ -13,6 +13,7 @@
 		A00000000000000000000004 /* ScreenCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000004 /* ScreenCaptureManager.swift */; };
 		A00000000000000000000005 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* AppConstants.swift */; };
 		A00000000000000000000006 /* StatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000006 /* StatusCard.swift */; };
+		A00000000000000000000007 /* MediaPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* MediaPipeline.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 				B00000000000000000000004 /* ScreenCaptureManager.swift */,
 				B00000000000000000000005 /* AppConstants.swift */,
 				B00000000000000000000006 /* StatusCard.swift */,
+				B00000000000000000000008 /* MediaPipeline.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +133,7 @@
 				A00000000000000000000004 /* ScreenCaptureManager.swift in Sources */,
 				A00000000000000000000005 /* AppConstants.swift in Sources */,
 				A00000000000000000000006 /* StatusCard.swift in Sources */,
+				A00000000000000000000007 /* MediaPipeline.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
