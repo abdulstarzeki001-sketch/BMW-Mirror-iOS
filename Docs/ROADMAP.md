@@ -22,16 +22,17 @@
 - Start/stop capture from the app
 - Convert video sample buffers into preview frames
 - Show live frame preview, frame count, resolution, status, and errors
-- Keep microphone disabled for the first capture test
 
-## ⏳ Stage 4 — Media Pipeline
-- Separate raw capture frames from UI preview
-- Orientation handling
-- Audio path
-- Frame throttling / latency measurements
-- Prepare a transport-friendly video pipeline
+## ✅ Stage 4 — Media Pipeline
+- Separate capture from media processing
+- Correct ReplayKit frame orientation
+- Throttle video to a 30 FPS target
+- Downscale long edge to 1280 px for a lighter transport stream
+- Receive application-audio sample buffers
+- Track frame drops, actual FPS, processing latency, source/output size and orientation
+- Expose a transport-friendly processed-frame boundary for the next CarPlay stage
 
-## Stage 5 — CarPlay Simulator
+## ⏳ Stage 5 — CarPlay Simulator
 - Add supported CarPlay scene configuration
 - Test behavior in Apple CarPlay Simulator
 - Verify supported template/scene behavior
