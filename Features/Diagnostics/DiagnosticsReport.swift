@@ -19,16 +19,23 @@ enum DiagnosticsReport {
         App: \(AppConstants.appName)
         Target Vehicle: \(AppConstants.targetVehicle)
 
-        CarPlay
-        -------
-        Connected: \(carPlayManager.isConnected ? "YES" : "NO")
+        CarPlay App Scene
+        -----------------
+        Scene Connected: \(carPlayManager.isConnected ? "YES" : "NO")
         Status: \(carPlayManager.statusText)
         Last Event: \(carPlayManager.lastEventText)
 
-        Capture / Media Pipeline
-        ------------------------
+        Screen Capture
+        --------------
+        Mode: \(captureManager.captureMode.title)
+        Mode Detail: \(captureManager.captureMode.detail)
+        Full Display Supported: \(captureManager.supportsFullDisplayCapture ? "YES" : "NO")
         Capturing: \(captureManager.isCapturing ? "YES" : "NO")
+        Busy: \(captureManager.isBusy ? "YES" : "NO")
         Status: \(captureManager.statusText)
+
+        Media Pipeline
+        --------------
         Target FPS: \(captureManager.targetFPS)
         Actual FPS: \(captureManager.actualFPSText)
         Processing Latency: \(captureManager.processingLatencyText)
@@ -36,13 +43,16 @@ enum DiagnosticsReport {
         Output Size: \(captureManager.frameSizeText)
         Orientation: \(captureManager.orientationText)
         Processed Frames: \(captureManager.frameCount)
-        Dropped Frames: \(captureManager.droppedFrameCount)
-        App Audio Packets: \(captureManager.audioPacketCount)
+        Throttled Frames: \(captureManager.droppedFrameCount)
+        Failed Frames: \(captureManager.failedFrameCount)
+        Audio Packets: \(captureManager.audioPacketCount)
 
-        CarPlay Entitlement
-        -------------------
-        Approved/activated in this repository: NO
-        Candidate: com.apple.developer.carplay-video
+        CarPlay Video Path
+        ------------------
+        Entitlement Example: com.apple.developer.carplay-video
+        Entitlement Attached To Signing: NO (intentionally deferred)
+        AirPlay Video Playback Path: NOT IMPLEMENTED
+        Official Full-Display Capture Path: iOS 27+ ScreenCaptureKit
 
         BMW Physical Test
         -----------------
