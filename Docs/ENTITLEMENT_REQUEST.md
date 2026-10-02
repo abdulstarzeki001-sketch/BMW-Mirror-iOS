@@ -4,40 +4,44 @@
 - App name: BMW Mirror
 - Bundle ID: `com.abdulstar.bmwmirror`
 - Target: iPhone
-- Vehicle target: BMW X6 2025
+- Vehicle target for testing: BMW X6 2025
 
-## Intended official CarPlay category
-The closest current public CarPlay category to the project’s media goal is **CarPlay Video App**.
+## Candidate official category
+The current candidate for the project's video goal is **CarPlay Video App**.
 
-Entitlement key:
+Entitlement example:
 
 ```text
 com.apple.developer.carplay-video
 ```
 
-## Important limitation
-This entitlement is for **video apps**, not a generic permission to mirror arbitrary iPhone UI.
+## Scope warning
+This entitlement is for the CarPlay Video application category. It is **not** a generic unrestricted iPhone-screen-mirroring entitlement.
 
-Apple’s current CarPlay video-app path is intended for supported vehicles when parked. It also expects the app to support AirPlay video streaming.
+The project must therefore have a real video implementation and AirPlay-capable playback/output path before the request is made.
 
-Therefore the request to Apple must describe the app truthfully as a video/media experience. We should not claim that the entitlement guarantees unrestricted full-screen mirroring of all apps.
+## Why the entitlement is not active
+`BMWMirror.entitlements.example` is deliberately not attached to the Xcode target. Adding an entitlement that is absent from the active provisioning profile would cause signing problems.
 
-## Why the entitlement file is not active yet
-`BMWMirror.entitlements.example` is intentionally not attached to the Xcode target.
+## Engineering gate before payment/request
+Before enrolling or requesting the entitlement:
 
-If we add an entitlement that is absent from the active provisioning profile, device signing will fail.
+1. Complete the AirPlay Video output/playback layer.
+2. Prove that the produced video media can use an AirPlay-capable playback path.
+3. Keep diagnostics for route availability and playback state.
+4. Keep the CarPlay UI and app description aligned with what the app actually does.
 
-## When ready to pay/request
+## After that gate passes
 1. Enroll the Apple ID in Apple Developer Program.
-2. Register or confirm App ID `com.abdulstar.bmwmirror`.
-3. Request the applicable CarPlay entitlement from Apple.
-4. Wait for approval.
-5. Regenerate/download the provisioning profile containing that entitlement.
+2. Register/confirm App ID `com.abdulstar.bmwmirror`.
+3. Request the applicable CarPlay Video entitlement.
+4. Wait for Apple approval.
+5. Generate a provisioning profile containing the approved entitlement.
 6. Copy `BMWMirror.entitlements.example` to `BMWMirror.entitlements`.
-7. Set `CODE_SIGN_ENTITLEMENTS = BMWMirrorApp/BMWMirror.entitlements` in Debug/Release.
-8. Build and verify the signed entitlement.
-9. Test in CarPlay Simulator.
-10. Test on the BMW X6 2025.
+7. Set `CODE_SIGN_ENTITLEMENTS = BMWMirrorApp/BMWMirror.entitlements`.
+8. Build and inspect the signed entitlement.
+9. Test the applicable CarPlay environment.
+10. Verify support on the specific BMW X6 2025 head unit while parked.
 
-## Pre-payment state
-Everything up to the entitlement approval boundary remains in the repository without requiring payment.
+## Current state
+The repository is intentionally kept before the paid entitlement boundary until the AirPlay Video layer is implemented.
