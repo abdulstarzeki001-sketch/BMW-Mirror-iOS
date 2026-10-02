@@ -14,12 +14,17 @@ required_files=(
   "BMWMirror.xcodeproj/project.pbxproj"
   "BMWMirrorApp/Info.plist"
   "BMWMirrorApp/BMWMirrorApp.swift"
+  "BMWMirrorApp/BMWMirror.entitlements.example"
+  "Core/AppConstants.swift"
+  "Core/ProjectReadiness.swift"
+  "Features/CarPlay/CarPlayManager.swift"
   "Features/CarPlay/CarPlaySceneDelegate.swift"
   "Features/CarPlay/CarPlayPreviewView.swift"
+  "Features/ScreenCapture/CaptureMode.swift"
   "Features/ScreenCapture/ScreenCaptureManager.swift"
+  "Features/ScreenCapture/FullDisplayCaptureController.swift"
   "Features/Media/MediaPipeline.swift"
   "Features/Diagnostics/DiagnosticsReport.swift"
-  "BMWMirrorApp/BMWMirror.entitlements.example"
 )
 
 for file in "${required_files[@]}"; do
@@ -33,6 +38,9 @@ pass "CarPlay scene role is configured"
 grep -q "CarPlaySceneDelegate" BMWMirrorApp/Info.plist   || fail "CarPlay scene delegate is missing from Info.plist"
 pass "CarPlay scene delegate is configured"
 
+grep -q "<string>screen-capture</string>" BMWMirrorApp/Info.plist   || fail "iOS 27 full-display capture background mode is missing"
+pass "ScreenCaptureKit background mode is declared"
+
 grep -q "com.apple.developer.carplay-video" BMWMirrorApp/BMWMirror.entitlements.example   || fail "CarPlay video entitlement candidate is missing from example file"
 pass "Deferred entitlement example is present"
 
@@ -41,10 +49,25 @@ if grep -q "CODE_SIGN_ENTITLEMENTS = BMWMirrorApp/BMWMirror.entitlements;" BMWMi
 fi
 pass "Real CarPlay entitlement is not prematurely attached to signing"
 
-grep -q "CarPlaySceneDelegate.swift in Sources" BMWMirror.xcodeproj/project.pbxproj   || fail "CarPlaySceneDelegate is not included in Xcode Sources"
+required_sources=(
+  "CarPlaySceneDelegate.swift in Sources"
+  "MediaPipeline.swift in Sources"
+  "CaptureMode.swift in Sources"
+  "FullDisplayCaptureController.swift in Sources"
+  "ProjectReadiness.swift in Sources"
+)
 
-grep -q "MediaPipeline.swift in Sources" BMWMirror.xcodeproj/project.pbxproj   || fail "MediaPipeline is not included in Xcode Sources"
+for source in "${required_sources[@]}"; do
+  grep -q "$source" BMWMirror.xcodeproj/project.pbxproj     || fail "Missing Xcode source membership: $source"
+done
 pass "Core Swift files are included in the Xcode target"
+
+grep -q "processReplayKitVideoSampleBuffer" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Legacy ReplayKit path is not wired to the media pipeline"
+
+grep -q "FullDisplayCaptureController" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Full-display ScreenCaptureKit path is not wired"
+
+grep -q "AirPlay Video Output" Core/ProjectReadiness.swift   || fail "AirPlay output blocker is not represented in readiness"
+pass "Capture paths and AirPlay blocker are represented honestly"
 
 python3 - <<'PY'
 import plistlib
@@ -64,7 +87,16 @@ entry = role[0]
 if entry.get("UISceneClassName") != "CPTemplateApplicationScene":
     raise SystemExit("❌ CarPlay scene class is incorrect")
 
-print("✅ Info.plist parses and CarPlay scene configuration is structurally valid")
+if "screen-capture" not in data.get("UIBackgroundModes", []):
+    raise SystemExit("❌ screen-capture background mode is missing")
+
+with Path("BMWMirrorApp/BMWMirror.entitlements.example").open("rb") as f:
+    entitlements = plistlib.load(f)
+
+if entitlements.get("com.apple.developer.carplay-video") is not True:
+    raise SystemExit("❌ CarPlay video entitlement example is malformed")
+
+print("✅ Plists parse and key configurations are structurally valid")
 PY
 
 echo "✅ BMW Mirror preflight completed successfully"
