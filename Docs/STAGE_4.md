@@ -1,40 +1,36 @@
 # Stage 4 — Media Pipeline
 
-Status: **Complete**
+Status: **Complete.**
 
-## Video path
+## Input paths
+
 ```text
-ReplayKit CMSampleBuffer
-        ↓
-orientation normalization
-        ↓
-30 FPS throttle
-        ↓
-max 1280 px long edge
-        ↓
-CGImage preview / processed-frame boundary
+ReplayKit in-app capture ─┐
+                         ├─> MediaPipeline
+ScreenCaptureKit iOS 27+ ┘
 ```
 
-## Audio path
-Application-audio buffers are now received separately from video. The pipeline records packet and timing metadata. Microphone audio remains disabled.
+## Video processing
+- Target: 30 FPS.
+- Throttles frames above the target rate.
+- Normalizes ReplayKit orientation metadata.
+- Keeps ScreenCaptureKit frames in their supplied orientation.
+- Downscales the long edge to a maximum of 1280 px for the current preview/transport boundary.
+- Converts frames to `CGImage` for preview.
 
-## Diagnostics
-The iPhone UI shows:
-- actual processed FPS
-- target FPS
-- per-frame processing time
-- source resolution
-- output resolution
-- orientation
-- processed frames
-- throttled/dropped frames
-- application-audio packet count
+## Metrics
+The pipeline now keeps separate counters for:
+- successfully processed frames
+- throttled frames
+- failed/conversion frames
+- audio packets
+- actual smoothed FPS
+- frame processing latency
 
-## Architecture
-`ScreenCaptureManager` now owns capture state only. `MediaPipeline` performs the media work. This gives Stage 5 a clean output boundary to connect to whatever CarPlay presentation path Apple permits.
+This fixes the earlier accounting issue where an accepted frame could be counted as processed even when image conversion failed.
 
-## Current limitation
-The ReplayKit capture path used here is the compatibility path for the current iOS 17+ target and is deprecated in newer SDKs in favor of ScreenCaptureKit. It does not by itself prove unrestricted full-device mirroring across arbitrary apps.
+## Current boundary
+The pipeline produces a processed-frame boundary, but it is **not yet an AirPlay video stream**.
 
 ## Next
-Stage 5 — CarPlay Simulator and supported CarPlay scene/presentation configuration.
+Encode/bridge the media into a genuine AirPlay-capable video playback/output path before requesting the CarPlay Video entitlement.
