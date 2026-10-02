@@ -11,6 +11,11 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     ) {
         self.interfaceController = interfaceController
 
+        NotificationCenter.default.post(
+            name: .bmwMirrorCarPlaySceneDidConnect,
+            object: templateApplicationScene
+        )
+
         let captureItem = CPListItem(
             text: "Full Display Capture",
             detailText: "ScreenCaptureKit • iOS 27+"
@@ -61,6 +66,12 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         didDisconnectInterfaceController interfaceController: CPInterfaceController
     ) {
         self.interfaceController = nil
+
+        NotificationCenter.default.post(
+            name: .bmwMirrorCarPlaySceneDidDisconnect,
+            object: templateApplicationScene
+        )
+
         print("BMW Mirror CarPlay scene disconnected")
     }
 }
