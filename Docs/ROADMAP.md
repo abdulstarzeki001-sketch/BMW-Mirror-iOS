@@ -15,12 +15,22 @@
 - ReplayKit `RPScreenRecorder` path
 - Explicitly limited to BMW Mirror's own app content
 
-## 🟡 Stage 3B — Full Display Compatibility for iOS 17–26
-- Add ReplayKit Broadcast Upload Extension
-- Start it through `RPSystemBroadcastPickerView`
-- Receive video/audio `CMSampleBuffer` in `RPBroadcastSampleHandler`
-- Transport frames from the extension to BMW Mirror
-- This is a legacy/deprecated compatibility path
+## ✅ Stage 3B — Full Display Compatibility for iOS 17–26
+- Added ReplayKit Broadcast Upload Extension target
+- Added `RPSystemBroadcastPickerView` with preferred extension ID
+- Added `RPBroadcastSampleHandler`
+- Added required `RPBroadcastProcessModeSampleBuffer`
+- Broadcast extension feeds video/audio directly into the HLS encoder
+- Extension serves HLS on fixed port 8765
+- Main app can derive the iPhone LAN URL and load it through AVPlayer/AirPlay
+- No App Group is required for the media transport
+
+## 🟡 Stage 3B Device Validation
+- Start a real system broadcast on iPhone
+- Verify the upload extension launches and stays alive
+- Verify HLS appears on port 8765
+- Verify AVPlayer loads the extension-generated stream
+- Verify AirPlay external playback from the legacy path
 
 ## ✅ Stage 3C — Full Display Capture for iOS 27+
 - ScreenCaptureKit
