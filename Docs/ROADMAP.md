@@ -130,3 +130,23 @@
 - iOS Simulator Build passed after fixing the CarPlay scene lifecycle compile error
 - CI warnings reviewed
 - Checkout workflow updated to a Node 24-compatible action
+
+
+## ✅ Stage 13A — iPad Swift Playgrounds Harness
+- Standalone `BMWMirrorPad.swiftpm` app playground
+- Runs on iPad/iPhone with iOS/iPadOS 17+
+- Apple HLS probe
+- Custom HLS URL input
+- HLS reachability + latency probe
+- AVPlayer external playback monitoring
+- AirPlay video route picker
+- Route/network diagnostics
+- Shareable validation report
+
+## 🟡 Stage 13B — iPad Physical AirPlay Validation
+- Open the playground on the user's iPad
+- Run Apple HLS probe
+- Select a real AirPlay video receiver
+- Confirm `External Playback = active`
+- Export the validation report
+- Optionally test the iPhone Broadcast HLS URL from the iPad on the same network
