@@ -24,6 +24,11 @@
 		A00000000000000000000015 /* AirPlayVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000017 /* AirPlayVideoManager.swift */; };
 		A00000000000000000000016 /* AirPlayRoutePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000018 /* AirPlayRoutePicker.swift */; };
 		A00000000000000000000017 /* AirPlayProbeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000019 /* AirPlayProbeView.swift */; };
+		A00000000000000000000018 /* LiveHLSStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000020 /* LiveHLSStore.swift */; };
+		A00000000000000000000019 /* LiveHLSSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000021 /* LiveHLSSegmenter.swift */; };
+		A00000000000000000000020 /* LiveHLSHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000022 /* LiveHLSHTTPServer.swift */; };
+		A00000000000000000000021 /* LiveCaptureAirPlayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */; };
+		A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000024 /* LiveAirPlayBridgeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +51,11 @@
 		B00000000000000000000017 /* AirPlayVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayVideoManager.swift; sourceTree = "<group>"; };
 		B00000000000000000000018 /* AirPlayRoutePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayRoutePicker.swift; sourceTree = "<group>"; };
 		B00000000000000000000019 /* AirPlayProbeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayProbeView.swift; sourceTree = "<group>"; };
+		B00000000000000000000020 /* LiveHLSStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveHLSStore.swift; sourceTree = "<group>"; };
+		B00000000000000000000021 /* LiveHLSSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveHLSSegmenter.swift; sourceTree = "<group>"; };
+		B00000000000000000000022 /* LiveHLSHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveHLSHTTPServer.swift; sourceTree = "<group>"; };
+		B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveCaptureAirPlayBridge.swift; sourceTree = "<group>"; };
+		B00000000000000000000024 /* LiveAirPlayBridgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveAirPlayBridgeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +90,11 @@
 				B00000000000000000000017 /* AirPlayVideoManager.swift */,
 				B00000000000000000000018 /* AirPlayRoutePicker.swift */,
 				B00000000000000000000019 /* AirPlayProbeView.swift */,
+				B00000000000000000000020 /* LiveHLSStore.swift */,
+				B00000000000000000000021 /* LiveHLSSegmenter.swift */,
+				B00000000000000000000022 /* LiveHLSHTTPServer.swift */,
+				B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */,
+				B00000000000000000000024 /* LiveAirPlayBridgeView.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -177,6 +192,11 @@
 				A00000000000000000000015 /* AirPlayVideoManager.swift in Sources */,
 				A00000000000000000000016 /* AirPlayRoutePicker.swift in Sources */,
 				A00000000000000000000017 /* AirPlayProbeView.swift in Sources */,
+				A00000000000000000000018 /* LiveHLSStore.swift in Sources */,
+				A00000000000000000000019 /* LiveHLSSegmenter.swift in Sources */,
+				A00000000000000000000020 /* LiveHLSHTTPServer.swift in Sources */,
+				A00000000000000000000021 /* LiveCaptureAirPlayBridge.swift in Sources */,
+				A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
