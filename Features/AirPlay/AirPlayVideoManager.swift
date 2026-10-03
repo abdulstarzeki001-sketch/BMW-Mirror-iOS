@@ -7,6 +7,7 @@ final class AirPlayVideoManager: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var isExternalPlaybackActive = false
     @Published private(set) var playerItemStatusText = "لم يبدأ"
+    @Published private(set) var currentSourceLabel = "لا يوجد مصدر"
     @Published private(set) var errorText: String?
 
     let player = AVPlayer()
@@ -14,9 +15,13 @@ final class AirPlayVideoManager: ObservableObject {
     private var timer: Timer?
     private var currentItemObservation: NSKeyValueObservation?
 
-    init() {
+    init(prepareProbeOnInit: Bool = true) {
         configurePlayer()
-        prepareProbe()
+
+        if prepareProbeOnInit {
+            prepareProbe()
+        }
+
         startMonitoring()
     }
 
@@ -26,20 +31,28 @@ final class AirPlayVideoManager: ObservableObject {
     }
 
     func prepareProbe() {
-        errorText = nil
-
         guard let url = URL(string: AppConstants.airPlayProbeURL) else {
             statusText = "رابط الاختبار غير صالح"
             errorText = "تعذر تكوين رابط HLS التجريبي."
             return
         }
 
+        load(
+            url: url,
+            label: "Apple HLS Probe"
+        )
+    }
+
+    func load(url: URL, label: String) {
+        errorText = nil
+        currentSourceLabel = label
+
         let item = AVPlayerItem(url: url)
         observe(item: item)
         player.replaceCurrentItem(with: item)
 
         playerItemStatusText = "جارٍ التحضير"
-        statusText = "تم تحميل فيديو HLS تجريبي لـ AirPlay"
+        statusText = "تم تحميل \(label)"
     }
 
     func togglePlayback() {
@@ -66,9 +79,9 @@ final class AirPlayVideoManager: ObservableObject {
         if isExternalPlaybackActive {
             statusText = "AirPlay Video خارجي نشط"
         } else if isPlaying {
-            statusText = "الفيديو يعمل محليًا — اختر AirPlay من زر المسار"
+            statusText = "\(currentSourceLabel) يعمل محليًا — اختر AirPlay"
         } else if player.currentItem?.status == .readyToPlay {
-            statusText = "الفيديو جاهز — اختر جهاز AirPlay"
+            statusText = "\(currentSourceLabel) جاهز — اختر جهاز AirPlay"
         }
     }
 
@@ -104,11 +117,11 @@ final class AirPlayVideoManager: ObservableObject {
 
                 case .readyToPlay:
                     self.playerItemStatusText = "جاهز"
-                    self.statusText = "فيديو AirPlay التجريبي جاهز"
+                    self.statusText = "\(self.currentSourceLabel) جاهز"
 
                 case .failed:
                     self.playerItemStatusText = "فشل"
-                    self.statusText = "فشل تحميل فيديو الاختبار"
+                    self.statusText = "فشل تحميل \(self.currentSourceLabel)"
                     self.errorText = item.error?.localizedDescription ?? "خطأ غير معروف"
 
                 @unknown default:
