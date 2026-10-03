@@ -93,6 +93,11 @@
 		B00000000000000000000024 /* LiveAirPlayBridgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveAirPlayBridgeView.swift; sourceTree = "<group>"; };
 		B00000000000000000000025 /* AirPlayValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayValidationManager.swift; sourceTree = "<group>"; };
 		B00000000000000000000026 /* AirPlayValidationReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayValidationReport.swift; sourceTree = "<group>"; };
+		B00000000000000000000027 /* BMWMirrorBroadcast.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = BMWMirrorBroadcast.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B00000000000000000000028 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastExtension/SampleHandler.swift; sourceTree = "<group>"; };
+		B00000000000000000000029 /* BroadcastExtension Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BroadcastExtension/Info.plist; sourceTree = "<group>"; };
+		B00000000000000000000030 /* LegacyBroadcastPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/ScreenCapture/LegacyBroadcastPickerView.swift; sourceTree = "<group>"; };
+		B00000000000000000000031 /* LegacyBroadcastAirPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LegacyBroadcastAirPlayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
