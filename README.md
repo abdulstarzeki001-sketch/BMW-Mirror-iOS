@@ -1,90 +1,120 @@
 # BMW Mirror iOS
 
-تطبيق تجريبي لـ iPhone لاختبار التقاط الشاشة وتجهيز مسار عرض متوافق مع CarPlay ضمن APIs وصلاحيات Apple الرسمية.
+تطبيق iPhone تجريبي لبناء مسار رسمي قدر الإمكان من **التقاط شاشة iPhone → فيديو حي → AirPlay → CarPlay Video / BMW** ضمن APIs وصلاحيات Apple.
 
 ## الحالة الحالية
 
-- ✅ مشروع SwiftUI/Xcode — **Build ناجح في CI**
-- ✅ اكتشاف مشهد CarPlay الخاص بالتطبيق
-- ✅ ReplayKit لالتقاط محتوى BMW Mirror نفسه
-- 🟡 iOS 17–26: الالتقاط الكامل يحتاج **ReplayKit Broadcast Upload Extension**
-- ✅ iOS 27+: ScreenCaptureKit full-display path
-- ✅ Media Pipeline + FPS/latency/diagnostics
-- ✅ CarPlay template scene
+- ✅ Xcode/SwiftUI project
+- ✅ CI Project Preflight
+- ✅ iOS Simulator Build
+- ✅ CarPlay app scene
+- ✅ Media Pipeline
 - ✅ AirPlay playback probe
-- ✅ **Live Capture → fragmented MP4/HLS bridge**
-- ✅ Local HLS HTTP server + AVPlayer live playback path
-- 🟡 **External AirPlay validation للـ Live HLS لم يتم بعد**
-- 🟡 CarPlay Video entitlement غير مفعّل
-- 🟡 اختبار BMW X6 2025 لم يتم بعد
+- ✅ Live Capture → fragmented MP4 / Apple HLS
+- ✅ Local HLS server + AVPlayer
+- ✅ External AirPlay validation dashboard
+- ✅ ReplayKit Broadcast Upload Extension لـ iOS 17–26
+- ✅ ScreenCaptureKit full-display path لـ iOS 27+
+- 🟡 External AirPlay receiver test
+- 🟡 Real iPhone validation for the legacy broadcast extension
+- 🟡 Apple CarPlay Video entitlement
+- 🟡 BMW X6 2025 physical test
 
-## المسار الحالي لـ iOS 27+
+## iOS 27+ architecture
 
 ```text
-iPhone full display
-    ↓
+iPhone Full Display
+        ↓
 ScreenCaptureKit
-    ↓
+        ↓
 Media Pipeline
-    ↓
+        ↓
 AVAssetWriter
-    ↓
+        ↓
 fragmented MP4 / Apple HLS
-    ↓
-Rolling HLS playlist
-    ↓
-Local HTTP server
-    ↓
+        ↓
+Local HLS Server
+        ↓
 AVPlayer
-    ↓
-AirPlay route picker
-    ↓
-External AirPlay validation  ← المرحلة الحالية
-    ↓
+        ↓
+AirPlay
+        ↓
 CarPlay Video entitlement
-    ↓
-BMW X6 test
+        ↓
+Supported BMW display
 ```
 
-Apple HLS segment generation في المشروع يستخدم `AVAssetWriter.outputFileTypeProfile = .mpeg4AppleHLS` ومقاطع قصيرة لتقليل التأخير.
-
-## iOS 17–26 compatibility
+## iOS 17–26 compatibility architecture
 
 ```text
-System Broadcast Picker
-    ↓
-ReplayKit Broadcast Upload Extension   ← لم يُنفذ بعد
-    ↓
-Frame transport to BMW Mirror
-    ↓
-Live HLS bridge
-    ↓
-AirPlay / CarPlay
+RPSystemBroadcastPickerView
+        ↓
+BMWMirrorBroadcast.appex
+        ↓
+RPBroadcastSampleHandler
+        ↓
+video + app-audio CMSampleBuffer
+        ↓
+AVAssetWriter / Apple HLS
+        ↓
+HTTP port 8765
+        ↓
+BMW Mirror AVPlayer
+        ↓
+AirPlay
 ```
 
-## فتح المشروع
+هذا المسار لا يستخدم App Groups لنقل الفيديو. الـ Broadcast Upload Extension نفسه يبني HLS ويقدمه على منفذ ثابت.
 
-افتح `BMWMirror.xcodeproj`، اختر iPhone Simulator ثم Run.
+## External AirPlay validation
 
-## اختبار Live AirPlay Bridge
+صفحة **Live Capture → AirPlay** تعرض:
 
-من الصفحة الرئيسية:
+- `AVPlayer.isExternalPlaybackActive`
+- playback stalls / keep-up
+- HLS playlist/media request counts
+- likely external-client requests
+- last HTTP client endpoint
+- first-HLS-ready latency
+- AVRouteDetector
+- current audio route
+- Network.framework path/interfaces
+- تقرير قابل للمشاركة
 
-1. ابدأ Screen Capture.
-2. افتح **Live Capture → AirPlay**.
-3. انتظر حتى تصبح حالة **Live HLS = جاهز لـ AVPlayer**.
-4. اضغط **تحميل البث الحي**.
-5. شغّل الفيديو محليًا.
-6. استخدم زر AirPlay لاختيار مستقبل فيديو.
+الاختبار لا يُعتبر ناجحًا لمجرد أن الفيديو يعمل محليًا. نحتاج دليلًا فعليًا على تشغيل خارجي، مثل:
 
-نجاح الفيديو داخل AVPlayer لا يعني تلقائيًا نجاح المستقبل الخارجي؛ يجب اختبار `isExternalPlaybackActive` على جهاز فعلي.
+```text
+External Playback = true
+        +
+external HLS client requests / verified receiver playback
+```
 
-## Bundle ID
+## Bundle IDs
+
+Host app:
 
 `com.abdulstar.bmwmirror`
 
-## قبل الدفع
+ReplayKit Broadcast Upload Extension:
 
-شغّل `bash Scripts/preflight.sh`.
+`com.abdulstar.bmwmirror.broadcast`
 
-لا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل موافقة Apple، ولا تعتبر المشروع جاهزًا للسيارة قبل نجاح External AirPlay على البث الحي.
+## فتح المشروع
+
+افتح:
+
+`BMWMirror.xcodeproj`
+
+ثم اختر iPhone Simulator أو جهاز iPhone فعلي.
+
+## الفحص قبل أي دفع
+
+```bash
+bash Scripts/preflight.sh
+```
+
+ولا تربط `BMWMirror.entitlements` الحقيقي قبل أن توافق Apple على entitlement المناسب.
+
+## حدود الحالة الحالية
+
+المشروع صار يملك المسارات البرمجية الأساسية، لكنه **ليس مثبتًا بعد كتطبيق mirroring ناجح على BMW**. ما زال مطلوبًا اختبار AirPlay/ReplayKit على جهاز حقيقي، ثم CarPlay Video entitlement، ثم اختبار BMW X6 2025 مع السيارة متوقفة وحسب القيود التي يفرضها النظام والسيارة.
