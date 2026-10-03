@@ -2,17 +2,37 @@ import Foundation
 import Network
 import Darwin
 
+struct LiveHLSServerStatistics {
+    let totalRequests: Int
+    let playlistRequests: Int
+    let mediaRequests: Int
+    let externalClientRequests: Int
+    let bytesServed: Int
+    let lastClientEndpoint: String
+    let lastRequestPath: String
+}
+
 final class LiveHLSHTTPServer {
     var onReady: ((URL) -> Void)?
     var onError: ((Error) -> Void)?
+    var onStatistics: ((LiveHLSServerStatistics) -> Void)?
 
     private let store: LiveHLSStore
     private let queue = DispatchQueue(
         label: "com.abdulstar.bmwmirror.hls-http",
         qos: .userInitiated
     )
+    private let statsLock = NSLock()
 
     private var listener: NWListener?
+    private var advertisedHost: String?
+    private var totalRequests = 0
+    private var playlistRequests = 0
+    private var mediaRequests = 0
+    private var externalClientRequests = 0
+    private var bytesServed = 0
+    private var lastClientEndpoint = "—"
+    private var lastRequestPath = "—"
 
     init(store: LiveHLSStore) {
         self.store = store
@@ -20,6 +40,8 @@ final class LiveHLSHTTPServer {
 
     func start() {
         guard listener == nil else { return }
+
+        resetStatistics()
 
         do {
             let parameters = NWParameters.tcp
@@ -38,7 +60,9 @@ final class LiveHLSHTTPServer {
                 case .ready:
                     guard let port = listener?.port else { return }
 
-                    let host = self.localIPv4Address() ?? "127.0.0.1"
+                    let host = self.preferredLocalIPv4Address() ?? "127.0.0.1"
+                    self.advertisedHost = host
+
                     if let url = URL(
                         string: "http://\(host):\(port.rawValue)/live.m3u8"
                     ) {
@@ -67,6 +91,7 @@ final class LiveHLSHTTPServer {
     func stop() {
         listener?.cancel()
         listener = nil
+        advertisedHost = nil
     }
 
     private func handle(_ connection: NWConnection) {
@@ -105,11 +130,26 @@ final class LiveHLSHTTPServer {
             }
 
             let path = String(parts[1])
+            let clientEndpoint = String(describing: connection.endpoint)
+            let remoteHost = self.remoteHost(from: connection.endpoint)
 
             guard let response = self.store.response(for: path) else {
+                self.recordRequest(
+                    path: path,
+                    clientEndpoint: clientEndpoint,
+                    remoteHost: remoteHost,
+                    bytes: 0
+                )
                 self.sendNotFound(on: connection)
                 return
             }
+
+            self.recordRequest(
+                path: path,
+                clientEndpoint: clientEndpoint,
+                remoteHost: remoteHost,
+                bytes: response.data.count
+            )
 
             self.send(
                 status: "200 OK",
@@ -118,6 +158,64 @@ final class LiveHLSHTTPServer {
                 on: connection
             )
         }
+    }
+
+    private func recordRequest(
+        path: String,
+        clientEndpoint: String,
+        remoteHost: String?,
+        bytes: Int
+    ) {
+        statsLock.lock()
+
+        totalRequests += 1
+        bytesServed += max(bytes, 0)
+        lastClientEndpoint = clientEndpoint
+        lastRequestPath = path
+
+        if path.contains(".m3u8") {
+            playlistRequests += 1
+        } else if path.contains(".m4s") || path.contains("init.mp4") {
+            mediaRequests += 1
+        }
+
+        if let remoteHost, isLikelyExternalClient(host: remoteHost) {
+            externalClientRequests += 1
+        }
+
+        let snapshot = statisticsLocked()
+        statsLock.unlock()
+
+        onStatistics?(snapshot)
+    }
+
+    private func isLikelyExternalClient(host: String) -> Bool {
+        let normalized = host
+            .trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+            .lowercased()
+
+        if normalized == "127.0.0.1" || normalized == "::1" || normalized == "localhost" {
+            return false
+        }
+
+        let localAddresses = Set(allLocalIPv4Addresses())
+        if localAddresses.contains(normalized) {
+            return false
+        }
+
+        if let advertisedHost, normalized == advertisedHost.lowercased() {
+            return false
+        }
+
+        return true
+    }
+
+    private func remoteHost(from endpoint: NWEndpoint) -> String? {
+        guard case let .hostPort(host, _) = endpoint else {
+            return nil
+        }
+
+        return String(describing: host)
     }
 
     private func sendNotFound(on connection: NWConnection) {
@@ -156,12 +254,53 @@ final class LiveHLSHTTPServer {
         )
     }
 
-    private func localIPv4Address() -> String? {
+    private func resetStatistics() {
+        statsLock.lock()
+        totalRequests = 0
+        playlistRequests = 0
+        mediaRequests = 0
+        externalClientRequests = 0
+        bytesServed = 0
+        lastClientEndpoint = "—"
+        lastRequestPath = "—"
+        let snapshot = statisticsLocked()
+        statsLock.unlock()
+
+        onStatistics?(snapshot)
+    }
+
+    private func statisticsLocked() -> LiveHLSServerStatistics {
+        LiveHLSServerStatistics(
+            totalRequests: totalRequests,
+            playlistRequests: playlistRequests,
+            mediaRequests: mediaRequests,
+            externalClientRequests: externalClientRequests,
+            bytesServed: bytesServed,
+            lastClientEndpoint: lastClientEndpoint,
+            lastRequestPath: lastRequestPath
+        )
+    }
+
+    private func preferredLocalIPv4Address() -> String? {
+        let addresses = localIPv4AddressPairs()
+
+        if let wifi = addresses.first(where: { $0.name == "en0" }) {
+            return wifi.address
+        }
+
+        return addresses.first?.address
+    }
+
+    private func allLocalIPv4Addresses() -> [String] {
+        localIPv4AddressPairs().map(\.address)
+    }
+
+    private func localIPv4AddressPairs() -> [(name: String, address: String)] {
         var interfacePointer: UnsafeMutablePointer<ifaddrs>?
 
         guard getifaddrs(&interfacePointer) == 0,
               let firstInterface = interfacePointer else {
-            return nil
+            return []
         }
 
         defer {
@@ -169,14 +308,11 @@ final class LiveHLSHTTPServer {
         }
 
         var pointer: UnsafeMutablePointer<ifaddrs>? = firstInterface
-        var fallbackAddress: String?
+        var results: [(name: String, address: String)] = []
 
         while let current = pointer {
             let interface = current.pointee
-
-            defer {
-                pointer = interface.ifa_next
-            }
+            pointer = interface.ifa_next
 
             guard let address = interface.ifa_addr else {
                 continue
@@ -187,6 +323,9 @@ final class LiveHLSHTTPServer {
             }
 
             let name = String(cString: interface.ifa_name)
+            guard name != "lo0" else {
+                continue
+            }
 
             var hostname = [CChar](
                 repeating: 0,
@@ -207,17 +346,14 @@ final class LiveHLSHTTPServer {
                 continue
             }
 
-            let value = String(cString: hostname)
-
-            if name == "en0" {
-                return value
-            }
-
-            if name != "lo0", fallbackAddress == nil {
-                fallbackAddress = value
-            }
+            results.append(
+                (
+                    name: name,
+                    address: String(cString: hostname)
+                )
+            )
         }
 
-        return fallbackAddress
+        return results
     }
 }
