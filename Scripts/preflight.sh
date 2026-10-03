@@ -103,6 +103,10 @@ grep -q "RPSystemBroadcastPickerView" Features/ScreenCapture/LegacyBroadcastPick
 
 grep -q "LiveCaptureAirPlayBridge" BroadcastExtension/SampleHandler.swift   || fail "Broadcast extension is not wired to the HLS bridge"
 
+grep -q "URLSession.shared.data" Features/AirPlay/LegacyBroadcastMonitor.swift   || fail "Legacy broadcast health monitor is missing"
+
+grep -q "broadcastMonitor.start" Features/AirPlay/LegacyBroadcastAirPlayView.swift   || fail "Legacy broadcast screen is not starting the health monitor"
+
 grep -q "AirPlay Playback Probe" Core/ProjectReadiness.swift   || fail "AirPlay playback probe is not represented in readiness"
 
 grep -q "Live Capture → HLS Bridge" Core/ProjectReadiness.swift   || fail "Live capture to HLS bridge is not represented in readiness"
