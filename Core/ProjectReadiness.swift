@@ -59,9 +59,15 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
+                id: "airplay-validation-toolkit",
+                title: "AirPlay Validation Toolkit",
+                detail: "Route detection + network monitor + HTTP client metrics + stall tracking + shareable report",
+                isReady: true
+            ),
+            .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
-                detail: "المسار البرمجي موجود لكن يحتاج اختبار جهاز AirPlay فعلي للتأكد من وصول المستقبل إلى الخادم المحلي",
+                detail: "الاختبار البرمجي مجهز؛ المتبقي تشغيله على مستقبل AirPlay فعلي",
                 isReady: false
             ),
             .init(
