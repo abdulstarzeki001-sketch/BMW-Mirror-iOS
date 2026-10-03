@@ -71,6 +71,12 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
+                id: "device-validation-center",
+                title: "Device Validation Center",
+                detail: "يفحص الجهاز/الـappex/مسار الالتقاط/الشبكة/HLS ويصدر تقريرًا قبل entitlement",
+                isReady: true
+            ),
+            .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
                 detail: "الاختبار البرمجي مجهز؛ المتبقي تشغيله على مستقبل AirPlay فعلي",
