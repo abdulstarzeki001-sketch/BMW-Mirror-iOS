@@ -38,6 +38,8 @@ The host app derives the iPhone IPv4 address and uses the known fixed port.
 - Video + app-audio forwarding to the HLS bridge.
 - Fixed HLS port: `8765`.
 - Main-app legacy AirPlay player screen.
+- One-second HLS health probe with latency and reachability state.
+- Automatic AVPlayer loading when the Broadcast Extension server becomes reachable.
 - App-extension embedding and target dependency.
 
 ## Important
