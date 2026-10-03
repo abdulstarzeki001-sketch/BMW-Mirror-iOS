@@ -18,6 +18,7 @@ final class LiveHLSHTTPServer {
     var onStatistics: ((LiveHLSServerStatistics) -> Void)?
 
     private let store: LiveHLSStore
+    private let requestedPort: NWEndpoint.Port
     private let queue = DispatchQueue(
         label: "com.abdulstar.bmwmirror.hls-http",
         qos: .userInitiated
@@ -34,8 +35,12 @@ final class LiveHLSHTTPServer {
     private var lastClientEndpoint = "—"
     private var lastRequestPath = "—"
 
-    init(store: LiveHLSStore) {
+    init(
+        store: LiveHLSStore,
+        port: NWEndpoint.Port = .any
+    ) {
         self.store = store
+        self.requestedPort = port
     }
 
     func start() {
@@ -49,7 +54,7 @@ final class LiveHLSHTTPServer {
 
             let listener = try NWListener(
                 using: parameters,
-                on: .any
+                on: requestedPort
             )
             self.listener = listener
 
@@ -60,7 +65,7 @@ final class LiveHLSHTTPServer {
                 case .ready:
                     guard let port = listener?.port else { return }
 
-                    let host = self.preferredLocalIPv4Address() ?? "127.0.0.1"
+                    let host = Self.preferredLocalIPv4Address() ?? "127.0.0.1"
                     self.advertisedHost = host
 
                     if let url = URL(
@@ -198,7 +203,7 @@ final class LiveHLSHTTPServer {
             return false
         }
 
-        let localAddresses = Set(allLocalIPv4Addresses())
+        let localAddresses = Set(Self.allLocalIPv4Addresses())
         if localAddresses.contains(normalized) {
             return false
         }
@@ -281,7 +286,7 @@ final class LiveHLSHTTPServer {
         )
     }
 
-    private func preferredLocalIPv4Address() -> String? {
+    static func preferredLocalIPv4Address() -> String? {
         let addresses = localIPv4AddressPairs()
 
         if let wifi = addresses.first(where: { $0.name == "en0" }) {
@@ -291,11 +296,11 @@ final class LiveHLSHTTPServer {
         return addresses.first?.address
     }
 
-    private func allLocalIPv4Addresses() -> [String] {
+    private static func allLocalIPv4Addresses() -> [String] {
         localIPv4AddressPairs().map(\.address)
     }
 
-    private func localIPv4AddressPairs() -> [(name: String, address: String)] {
+    private static func localIPv4AddressPairs() -> [(name: String, address: String)] {
         var interfacePointer: UnsafeMutablePointer<ifaddrs>?
 
         guard getifaddrs(&interfacePointer) == 0,
