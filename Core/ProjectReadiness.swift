@@ -47,9 +47,15 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
-                id: "airplay-video",
-                title: "AirPlay Video Output",
-                detail: "مطلوب لمسار CarPlay Video الرسمي ولم يتم تنفيذه بعد",
+                id: "airplay-probe",
+                title: "AirPlay Playback Probe",
+                detail: "AVPlayer + AVRoutePickerView + External Playback جاهز للاختبار",
+                isReady: true
+            ),
+            .init(
+                id: "capture-airplay-bridge",
+                title: "Live Capture → AirPlay Bridge",
+                detail: "تحويل خرج الالتقاط الحي إلى فيديو AirPlay فعلي لم يُنفذ بعد",
                 isReady: false
             ),
             .init(
