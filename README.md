@@ -15,6 +15,8 @@
 - ✅ External AirPlay validation dashboard
 - ✅ ReplayKit Broadcast Upload Extension لـ iOS 17–26
 - ✅ ScreenCaptureKit full-display path لـ iOS 27+
+- ✅ Device Validation Center قبل entitlement
+- ✅ guarded physical-device signing script
 - 🟡 External AirPlay receiver test
 - 🟡 Real iPhone validation for the legacy broadcast extension
 - 🟡 Apple CarPlay Video entitlement
@@ -112,6 +114,16 @@ ReplayKit Broadcast Upload Extension:
 ```bash
 bash Scripts/preflight.sh
 ```
+
+ولتحضير build موجّه لـ iPhone فعلي على Mac/Xcode:
+
+```bash
+DEVELOPMENT_TEAM=YOUR_TEAM_ID bash Scripts/device-build.sh
+```
+
+السكريبت يرفض التشغيل إذا تم ربط ملف CarPlay entitlement الحقيقي قبل الموافقة، ولا يخزن Team ID أو شهادات أو أسرار داخل GitHub.
+
+داخل التطبيق استخدم **Device Validation Center** بعد التثبيت لتأكيد الجهاز، الـBroadcast Extension، مسار الالتقاط، الشبكة وLive HLS.
 
 ولا تربط `BMWMirror.entitlements` الحقيقي قبل أن توافق Apple على entitlement المناسب.
 
