@@ -173,15 +173,34 @@
 				D00000000000000000000001 /* Sources */,
 				D00000000000000000000002 /* Frameworks */,
 				D00000000000000000000003 /* Resources */,
+				D00000000000000000000004 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				J00000000000000000000002 /* PBXTargetDependency */,
 			);
 			name = BMWMirror;
 			productName = BMWMirror;
 			productReference = B00000000000000000000007 /* BMWMirror.app */;
 			productType = "com.apple.product-type.application";
+		};
+		E00000000000000000000002 /* BMWMirrorBroadcast */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = I00000000000000000000003 /* Build configuration list for PBXNativeTarget "BMWMirrorBroadcast" */;
+			buildPhases = (
+				D00000000000000000000005 /* Sources */,
+				D00000000000000000000006 /* Frameworks */,
+				D00000000000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BMWMirrorBroadcast;
+			productName = BMWMirrorBroadcast;
+			productReference = B00000000000000000000027 /* BMWMirrorBroadcast.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -194,6 +213,9 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					E00000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					E00000000000000000000002 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -212,6 +234,7 @@
 			projectRoot = "";
 			targets = (
 				E00000000000000000000001 /* BMWMirror */,
+				E00000000000000000000002 /* BMWMirrorBroadcast */,
 			);
 		};
 /* End PBXProject section */
