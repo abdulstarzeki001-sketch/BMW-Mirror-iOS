@@ -1,5 +1,6 @@
 import Foundation
 import CoreMedia
+import Network
 
 struct LiveCaptureBridgeSnapshot {
     let statusText: String
@@ -21,8 +22,12 @@ final class LiveCaptureAirPlayBridge {
     var onUpdate: ((LiveCaptureBridgeSnapshot) -> Void)?
 
     private let store = LiveHLSStore(maxSegments: 8)
+    private let serverPort: NWEndpoint.Port
     private lazy var segmenter = LiveHLSSegmenter(store: store)
-    private lazy var server = LiveHLSHTTPServer(store: store)
+    private lazy var server = LiveHLSHTTPServer(
+        store: store,
+        port: serverPort
+    )
 
     private let lock = NSLock()
     private var playbackURL: URL?
@@ -39,7 +44,9 @@ final class LiveCaptureAirPlayBridge {
         lastRequestPath: "—"
     )
 
-    init() {
+    init(port: NWEndpoint.Port = .any) {
+        self.serverPort = port
+
         segmenter.onStatistics = { [weak self] _ in
             self?.updateReadyLatencyIfNeeded()
             self?.publish()
