@@ -56,12 +56,22 @@
 - Load the live HLS URL into AVPlayer
 - Expose an AirPlay route picker on the live bridge screen
 
-## 🟡 Stage 10B — External AirPlay Validation
-- Verify that a real AirPlay receiver can reach the iPhone's live HLS server
-- Measure end-to-end latency and stability
-- Handle route/network changes
-- If receiver-side fetching cannot reach the local server, replace the transport with an AirPlay-compatible delivery design
-- Do not claim CarPlay mirroring until this validation succeeds
+## ✅ Stage 10B — External AirPlay Validation Toolkit
+- Instrument HLS server request/client metrics
+- Count playlist/media/external-client requests
+- Measure first-HLS-ready latency
+- Monitor AVPlayer stalls and keep-up state
+- Track `isExternalPlaybackActive`
+- Monitor AVRouteDetector + current audio route
+- Monitor Network.framework path/interfaces
+- Generate a shareable AirPlay validation report
+
+## 🟡 Stage 10C — Physical External AirPlay Validation
+- Run the validation toolkit against a real AirPlay video receiver
+- Confirm `isExternalPlaybackActive == true`
+- Confirm receiver-side HLS requests or equivalent verified playback evidence
+- Measure stability and practical latency
+- If the receiver cannot fetch the local HLS endpoint, replace the transport design before CarPlay testing
 
 ## 🟡 Stage 6 — CarPlay Video Entitlement
 - Candidate: `com.apple.developer.carplay-video`
