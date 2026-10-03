@@ -51,7 +51,12 @@ enum DiagnosticsReport {
         ------------------
         Entitlement Example: com.apple.developer.carplay-video
         Entitlement Attached To Signing: NO (intentionally deferred)
-        AirPlay Video Playback Path: NOT IMPLEMENTED
+        AirPlay Probe Path: IMPLEMENTED
+        Live HLS Bridge: \(captureManager.liveHLSReady ? "READY" : "NOT READY")
+        Live HLS Segments: \(captureManager.liveHLSSegmentCount)
+        Live HLS Bytes: \(captureManager.liveHLSBytes)
+        Live HLS URL: \(captureManager.liveHLSPlaybackURL?.absoluteString ?? "—")
+        External Live AirPlay Validation: NOT RUN
         Official Full-Display Capture Path: iOS 27+ ScreenCaptureKit
 
         BMW Physical Test
