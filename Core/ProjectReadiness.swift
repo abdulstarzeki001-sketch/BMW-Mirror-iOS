@@ -83,6 +83,18 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
+                id: "ipad-playgrounds-harness",
+                title: "iPad Swift Playgrounds Harness",
+                detail: "BMWMirrorPad.swiftpm جاهز لاختبار HLS/AirPlay/network diagnostics على iPad",
+                isReady: true
+            ),
+            .init(
+                id: "ipad-airplay-device-test",
+                title: "iPad AirPlay Device Test",
+                detail: "بانتظار تشغيل الـHarness على iPad واختيار مستقبل AirPlay فعلي",
+                isReady: false
+            ),
+            .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
                 detail: "الاختبار البرمجي مجهز؛ المتبقي تشغيله على مستقبل AirPlay فعلي",
