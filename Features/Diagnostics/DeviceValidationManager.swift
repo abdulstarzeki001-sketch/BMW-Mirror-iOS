@@ -28,7 +28,7 @@ final class DeviceValidationManager: ObservableObject {
     }
 
     var systemVersionText: String {
-        "(UIDevice.current.systemName) (UIDevice.current.systemVersion)"
+        "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
     }
 
     var modernFullDisplayExpected: Bool {
@@ -134,8 +134,8 @@ final class DeviceValidationManager: ObservableObject {
         }
 
         checks = results
-        let passedCount = results.filter(.passed).count
-        summaryText = "(passedCount)/(results.count) checks passed"
+        let passedCount = results.filter(\.passed).count
+        summaryText = "\(passedCount)/\(results.count) checks passed"
         lastRunText = Self.clockText()
         isRunning = false
     }
@@ -144,36 +144,36 @@ final class DeviceValidationManager: ObservableObject {
         captureManager: ScreenCaptureManager,
         carPlayManager: CarPlayManager
     ) -> String {
-        let checkLines = checks.map { check in
-            "[(check.passed ? "PASS" : "WAIT")] (check.title): (check.detail)"
-        }
-        .joined(separator: "
-")
+        let checkLines = checks
+            .map { check in
+                "[\(check.passed ? "PASS" : "WAIT")] \(check.title): \(check.detail)"
+            }
+            .joined(separator: "\n")
 
         return """
         BMW Mirror — Device Validation Center
         =====================================
-        Timestamp: (ISO8601DateFormatter().string(from: Date()))
-        Environment: (environmentText)
-        Device: (UIDevice.current.model)
-        System: (systemVersionText)
-        Preferred capture path: (preferredCapturePathText)
+        Timestamp: \(ISO8601DateFormatter().string(from: Date()))
+        Environment: \(environmentText)
+        Device: \(UIDevice.current.model)
+        System: \(systemVersionText)
+        Preferred capture path: \(preferredCapturePathText)
 
         Self-test
         ---------
-        (checkLines.isEmpty ? "No self-test run yet." : checkLines)
+        \(checkLines.isEmpty ? "No self-test run yet." : checkLines)
 
         Runtime
         -------
-        CarPlay scene: (carPlayManager.isConnected ? "CONNECTED" : "NOT CONNECTED")
-        CarPlay status: (carPlayManager.statusText)
-        Capture active: (captureManager.isCapturing ? "YES" : "NO")
-        Capture mode: (captureManager.captureMode.title)
-        Capture status: (captureManager.statusText)
-        Live HLS ready: (captureManager.liveHLSReady ? "YES" : "NO")
-        Live HLS URL: (captureManager.liveHLSPlaybackURL?.absoluteString ?? "—")
-        HLS segments: (captureManager.liveHLSSegmentCount)
-        External-client requests: (captureManager.liveHLSExternalClientRequests)
+        CarPlay scene: \(carPlayManager.isConnected ? "CONNECTED" : "NOT CONNECTED")
+        CarPlay status: \(carPlayManager.statusText)
+        Capture active: \(captureManager.isCapturing ? "YES" : "NO")
+        Capture mode: \(captureManager.captureMode.title)
+        Capture status: \(captureManager.statusText)
+        Live HLS ready: \(captureManager.liveHLSReady ? "YES" : "NO")
+        Live HLS URL: \(captureManager.liveHLSPlaybackURL?.absoluteString ?? "—")
+        HLS segments: \(captureManager.liveHLSSegmentCount)
+        External-client requests: \(captureManager.liveHLSExternalClientRequests)
 
         Required next proof
         -------------------
