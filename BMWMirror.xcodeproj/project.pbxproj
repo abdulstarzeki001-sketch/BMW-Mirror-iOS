@@ -31,7 +31,40 @@
 		A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000024 /* LiveAirPlayBridgeView.swift */; };
 		A00000000000000000000023 /* AirPlayValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000025 /* AirPlayValidationManager.swift */; };
 		A00000000000000000000024 /* AirPlayValidationReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000026 /* AirPlayValidationReport.swift */; };
+		A00000000000000000000025 /* LegacyBroadcastPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000030 /* LegacyBroadcastPickerView.swift */; };
+		A00000000000000000000026 /* LegacyBroadcastAirPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000031 /* LegacyBroadcastAirPlayView.swift */; };
+		A00000000000000000000027 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000028 /* SampleHandler.swift */; };
+		A00000000000000000000028 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* AppConstants.swift */; };
+		A00000000000000000000029 /* LiveHLSStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000020 /* LiveHLSStore.swift */; };
+		A00000000000000000000030 /* LiveHLSSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000021 /* LiveHLSSegmenter.swift */; };
+		A00000000000000000000031 /* LiveHLSHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000022 /* LiveHLSHTTPServer.swift */; };
+		A00000000000000000000032 /* LiveCaptureAirPlayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */; };
+		A00000000000000000000033 /* BMWMirrorBroadcast.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B00000000000000000000027 /* BMWMirrorBroadcast.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		J00000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E00000000000000000000002;
+			remoteInfo = BMWMirrorBroadcast;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D00000000000000000000004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A00000000000000000000033 /* BMWMirrorBroadcast.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B00000000000000000000001 /* BMWMirrorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BMWMirrorApp/BMWMirrorApp.swift; sourceTree = "<group>"; };
@@ -70,6 +103,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D00000000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -101,6 +141,10 @@
 				B00000000000000000000024 /* LiveAirPlayBridgeView.swift */,
 				B00000000000000000000025 /* AirPlayValidationManager.swift */,
 				B00000000000000000000026 /* AirPlayValidationReport.swift */,
+				B00000000000000000000028 /* SampleHandler.swift */,
+				B00000000000000000000029 /* BroadcastExtension Info.plist */,
+				B00000000000000000000030 /* LegacyBroadcastPickerView.swift */,
+				B00000000000000000000031 /* LegacyBroadcastAirPlayView.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				B00000000000000000000007 /* BMWMirror.app */,
+				B00000000000000000000027 /* BMWMirrorBroadcast.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -174,6 +219,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D00000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -205,10 +257,33 @@
 				A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */,
 				A00000000000000000000023 /* AirPlayValidationManager.swift in Sources */,
 				A00000000000000000000024 /* AirPlayValidationReport.swift in Sources */,
+				A00000000000000000000025 /* LegacyBroadcastPickerView.swift in Sources */,
+				A00000000000000000000026 /* LegacyBroadcastAirPlayView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D00000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000027 /* SampleHandler.swift in Sources */,
+				A00000000000000000000028 /* AppConstants.swift in Sources */,
+				A00000000000000000000029 /* LiveHLSStore.swift in Sources */,
+				A00000000000000000000030 /* LiveHLSSegmenter.swift in Sources */,
+				A00000000000000000000031 /* LiveHLSHTTPServer.swift in Sources */,
+				A00000000000000000000032 /* LiveCaptureAirPlayBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		J00000000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E00000000000000000000002 /* BMWMirrorBroadcast */;
+			targetProxy = J00000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		G00000000000000000000001 /* Debug */ = {
@@ -290,6 +365,46 @@
 			};
 			name = Release;
 		};
+		K00000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BroadcastExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.abdulstar.bmwmirror.broadcast;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		K00000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BroadcastExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.abdulstar.bmwmirror.broadcast;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -307,6 +422,15 @@
 			buildConfigurations = (
 				H00000000000000000000001 /* Debug */,
 				H00000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		I00000000000000000000003 /* Build configuration list for PBXNativeTarget "BMWMirrorBroadcast" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				K00000000000000000000001 /* Debug */,
+				K00000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
