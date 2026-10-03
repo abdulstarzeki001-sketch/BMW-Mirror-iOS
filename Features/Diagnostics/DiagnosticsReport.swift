@@ -65,7 +65,10 @@ enum DiagnosticsReport {
         HLS last client: \(captureManager.liveHLSLastClientEndpoint)
         HLS last path: \(captureManager.liveHLSLastRequestPath)
         External Live AirPlay Validation: TOOLKIT READY / DEVICE TEST NOT RUN
-        Official Full-Display Capture Path: iOS 27+ ScreenCaptureKit
+        Modern Full-Display Path: iOS 27+ ScreenCaptureKit
+        Legacy Full-Display Path: ReplayKit Broadcast Upload Extension
+        Legacy Broadcast Port: \(AppConstants.legacyBroadcastPort)
+        Legacy Extension Bundle ID: \(AppConstants.legacyBroadcastExtensionBundleID)
 
         BMW Physical Test
         -----------------
