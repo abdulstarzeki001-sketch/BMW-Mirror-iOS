@@ -49,6 +49,13 @@ pass "CarPlay scene delegate is configured"
 grep -q "<string>screen-capture</string>" BMWMirrorApp/Info.plist   || fail "iOS 27 full-display capture background mode is missing"
 pass "ScreenCaptureKit background mode is declared"
 
+grep -q "NSLocalNetworkUsageDescription" BMWMirrorApp/Info.plist   || fail "Local network usage description is missing"
+
+grep -q "NSAllowsLocalNetworking" BMWMirrorApp/Info.plist   || fail "ATS local-network exception is missing"
+
+grep -q "includePeerToPeer = true" Features/AirPlay/LiveHLSHTTPServer.swift   || fail "Peer-to-peer local HLS networking is not enabled"
+pass "Local HLS networking configuration is present"
+
 grep -q "com.apple.developer.carplay-video" BMWMirrorApp/BMWMirror.entitlements.example   || fail "CarPlay video entitlement candidate is missing from example file"
 pass "Deferred entitlement example is present"
 
