@@ -25,6 +25,9 @@ required_files=(
   "Features/ScreenCapture/FullDisplayCaptureController.swift"
   "Features/Media/MediaPipeline.swift"
   "Features/Diagnostics/DiagnosticsReport.swift"
+  "Features/AirPlay/AirPlayVideoManager.swift"
+  "Features/AirPlay/AirPlayRoutePicker.swift"
+  "Features/AirPlay/AirPlayProbeView.swift"
 )
 
 for file in "${required_files[@]}"; do
@@ -55,6 +58,9 @@ required_sources=(
   "CaptureMode.swift in Sources"
   "FullDisplayCaptureController.swift in Sources"
   "ProjectReadiness.swift in Sources"
+  "AirPlayVideoManager.swift in Sources"
+  "AirPlayRoutePicker.swift in Sources"
+  "AirPlayProbeView.swift in Sources"
 )
 
 for source in "${required_sources[@]}"; do
