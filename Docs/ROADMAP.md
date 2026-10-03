@@ -47,12 +47,21 @@
 - Apple-hosted HLS probe stream
 - In-app AirPlay test screen
 
-## 🟡 Next — Live Capture → AirPlay Bridge
-- Encode/bridge ScreenCaptureKit or ReplayKit frames into a video source AVPlayer/AirPlay can consume
-- Preserve audio/video timing
-- Keep latency suitable for a mirroring-style experience
-- Verify external playback using the same route picker
-- Do not claim CarPlay mirroring until this bridge works
+## ✅ Stage 10A — Live Capture → HLS Bridge
+- Feed accepted live video/audio sample buffers into AVAssetWriter
+- Use `outputFileTypeProfile = .mpeg4AppleHLS`
+- Emit fragmented MP4 initialization/media segments
+- Maintain a rolling HLS playlist in memory
+- Serve playlist/segments through a local Network.framework HTTP server
+- Load the live HLS URL into AVPlayer
+- Expose an AirPlay route picker on the live bridge screen
+
+## 🟡 Stage 10B — External AirPlay Validation
+- Verify that a real AirPlay receiver can reach the iPhone's live HLS server
+- Measure end-to-end latency and stability
+- Handle route/network changes
+- If receiver-side fetching cannot reach the local server, replace the transport with an AirPlay-compatible delivery design
+- Do not claim CarPlay mirroring until this validation succeeds
 
 ## 🟡 Stage 6 — CarPlay Video Entitlement
 - Candidate: `com.apple.developer.carplay-video`
