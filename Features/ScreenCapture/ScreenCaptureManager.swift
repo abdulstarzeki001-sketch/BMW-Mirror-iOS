@@ -23,10 +23,17 @@ final class ScreenCaptureManager: ObservableObject {
     @Published private(set) var statusText = "جاهز"
     @Published private(set) var errorText: String?
 
+    @Published private(set) var liveBridgeStatusText = "غير مفعّل"
+    @Published private(set) var liveHLSPlaybackURL: URL?
+    @Published private(set) var liveHLSSegmentCount = 0
+    @Published private(set) var liveHLSBytes = 0
+    @Published private(set) var liveHLSReady = false
+
     let targetFPS = 30
 
     private let recorder = RPScreenRecorder.shared()
     private let mediaPipeline = MediaPipeline(targetFPS: 30, maxOutputDimension: 1280)
+    private let liveBridge = LiveCaptureAirPlayBridge()
 
     #if canImport(ScreenCaptureKit)
     private var fullDisplayController: AnyObject?
@@ -34,6 +41,18 @@ final class ScreenCaptureManager: ObservableObject {
 
     init() {
         recorder.isMicrophoneEnabled = false
+
+        liveBridge.onUpdate = { [weak self] snapshot in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+
+                self.liveBridgeStatusText = snapshot.statusText
+                self.liveHLSPlaybackURL = snapshot.playbackURL
+                self.liveHLSSegmentCount = snapshot.segmentCount
+                self.liveHLSBytes = snapshot.totalBytes
+                self.liveHLSReady = snapshot.isReadyForPlayback
+            }
+        }
 
         if supportsFullDisplayCapture {
             captureMode = .fullDisplay
@@ -81,6 +100,7 @@ final class ScreenCaptureManager: ObservableObject {
         errorText = nil
         resetMetrics()
         mediaPipeline.reset()
+        liveBridge.start()
 
         switch captureMode {
         case .fullDisplay:
@@ -103,10 +123,15 @@ final class ScreenCaptureManager: ObservableObject {
         }
     }
 
+    func shutdownLiveBridge() {
+        liveBridge.shutdown()
+    }
+
     private func startReplayKitCapture() {
         guard recorder.isAvailable else {
             statusText = "ReplayKit غير متاح"
             errorText = "ReplayKit غير متاح حاليًا على هذا الجهاز."
+            liveBridge.shutdown()
             return
         }
 
@@ -114,6 +139,7 @@ final class ScreenCaptureManager: ObservableObject {
         statusText = "جارٍ بدء ReplayKit…"
 
         let pipeline = mediaPipeline
+        let bridge = liveBridge
 
         recorder.startCapture(
             handler: { [weak self] sampleBuffer, sampleType, error in
@@ -130,11 +156,14 @@ final class ScreenCaptureManager: ObservableObject {
                         return
                     }
 
+                    bridge.appendVideo(sampleBuffer)
+
                     Task { @MainActor [weak self] in
                         self?.consume(frame: frame)
                     }
 
                 case .audioApp:
+                    bridge.appendAudio(sampleBuffer)
                     let metrics = pipeline.inspectAudioSampleBuffer(sampleBuffer)
 
                     Task { @MainActor [weak self] in
@@ -195,12 +224,21 @@ final class ScreenCaptureManager: ObservableObject {
         guard supportsFullDisplayCapture else {
             statusText = "الشاشة الكاملة غير مدعومة"
             errorText = "هذا الوضع يحتاج iOS 27 أو أحدث وScreenCaptureKit."
+            liveBridge.shutdown()
             return
         }
 
         #if canImport(ScreenCaptureKit)
         if #available(iOS 27.0, *) {
             let controller = FullDisplayCaptureController(mediaPipeline: mediaPipeline)
+
+            controller.onVideoSampleBuffer = { [weak self] sampleBuffer in
+                self?.liveBridge.appendVideo(sampleBuffer)
+            }
+
+            controller.onAudioSampleBuffer = { [weak self] sampleBuffer in
+                self?.liveBridge.appendAudio(sampleBuffer)
+            }
 
             controller.onFrame = { [weak self] frame in
                 Task { @MainActor [weak self] in
@@ -251,6 +289,7 @@ final class ScreenCaptureManager: ObservableObject {
 
         statusText = "ScreenCaptureKit غير متاح"
         errorText = "نسخة Xcode/iOS الحالية لا توفر مسار ScreenCaptureKit المطلوب."
+        liveBridge.shutdown()
     }
 
     private func stopFullDisplayCapture() {
@@ -293,12 +332,19 @@ final class ScreenCaptureManager: ObservableObject {
         orientationText = "—"
         actualFPSText = "0.0"
         processingLatencyText = "—"
+
+        liveBridgeStatusText = "جارٍ التجهيز"
+        liveHLSPlaybackURL = nil
+        liveHLSSegmentCount = 0
+        liveHLSBytes = 0
+        liveHLSReady = false
     }
 
     private func finishStoppedState() {
         isCapturing = false
         isBusy = false
         statusText = "متوقف"
+        liveBridge.finishCapture()
 
         #if canImport(ScreenCaptureKit)
         fullDisplayController = nil
@@ -310,6 +356,7 @@ final class ScreenCaptureManager: ObservableObject {
         isBusy = false
         statusText = "حدث خطأ"
         errorText = error.localizedDescription
+        liveBridge.shutdown()
 
         #if canImport(ScreenCaptureKit)
         fullDisplayController = nil
