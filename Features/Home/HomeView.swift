@@ -68,6 +68,15 @@ struct HomeView: View {
                     .buttonStyle(.bordered)
 
                     NavigationLink {
+                        AirPlayProbeView()
+                    } label: {
+                        Label("AirPlay Video Probe", systemImage: "airplayvideo")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
+                    NavigationLink {
                         ReadinessView()
                     } label: {
                         Label("جاهزية المشروع", systemImage: "checklist")
