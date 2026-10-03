@@ -6,4 +6,9 @@ enum AppConstants {
 
     static let airPlayProbeURL =
         "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8"
+
+    static let legacyBroadcastExtensionBundleID =
+        "com.abdulstar.bmwmirror.broadcast"
+
+    static let legacyBroadcastPort: UInt16 = 8765
 }
