@@ -40,11 +40,19 @@
 - Root `CPListTemplate`
 - Explicit Info.plist scene manifest
 
-## 🟡 Next — AirPlay Video Output
-- Build a genuine video playback/output path that supports AirPlay
-- Bridge captured/encoded content into a format AirPlay/CarPlay Video can play
-- Verify route selection and external playback behavior
-- Do not claim CarPlay mirroring until this path works
+## ✅ Stage 5B — AirPlay Playback Probe
+- AVPlayer configured with `allowsExternalPlayback = true`
+- Video-prioritized `AVRoutePickerView`
+- External playback state monitoring
+- Apple-hosted HLS probe stream
+- In-app AirPlay test screen
+
+## 🟡 Next — Live Capture → AirPlay Bridge
+- Encode/bridge ScreenCaptureKit or ReplayKit frames into a video source AVPlayer/AirPlay can consume
+- Preserve audio/video timing
+- Keep latency suitable for a mirroring-style experience
+- Verify external playback using the same route picker
+- Do not claim CarPlay mirroring until this bridge works
 
 ## 🟡 Stage 6 — CarPlay Video Entitlement
 - Candidate: `com.apple.developer.carplay-video`
