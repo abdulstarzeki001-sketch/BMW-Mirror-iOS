@@ -95,6 +95,18 @@ struct HomeView: View {
                     .buttonStyle(.bordered)
 
                     NavigationLink {
+                        DeviceValidationCenterView(
+                            captureManager: captureManager,
+                            carPlayManager: carPlayManager
+                        )
+                    } label: {
+                        Label("Device Validation Center", systemImage: "stethoscope")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    NavigationLink {
                         ReadinessView()
                     } label: {
                         Label("جاهزية المشروع", systemImage: "checklist")
