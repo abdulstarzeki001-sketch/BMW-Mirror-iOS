@@ -86,6 +86,15 @@ struct HomeView: View {
                     .buttonStyle(.bordered)
 
                     NavigationLink {
+                        LegacyBroadcastAirPlayView()
+                    } label: {
+                        Label("Legacy Full Display — iOS 17–26", systemImage: "rectangle.inset.filled.and.person.filled")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
+                    NavigationLink {
                         ReadinessView()
                     } label: {
                         Label("جاهزية المشروع", systemImage: "checklist")
