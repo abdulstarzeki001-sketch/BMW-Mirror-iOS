@@ -85,11 +85,23 @@ required_sources=(
 for source in "${required_sources[@]}"; do
   grep -q "$source" BMWMirror.xcodeproj/project.pbxproj     || fail "Missing Xcode source membership: $source"
 done
-pass "Core Swift files are included in the Xcode target"
+grep -q "BMWMirrorBroadcast.appex" BMWMirror.xcodeproj/project.pbxproj   || fail "Broadcast extension product is missing from Xcode project"
+
+grep -q "com.abdulstar.bmwmirror.broadcast" BMWMirror.xcodeproj/project.pbxproj   || fail "Broadcast extension bundle ID is missing"
+
+pass "App + broadcast extension source membership is configured"
 
 grep -q "processReplayKitVideoSampleBuffer" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Legacy ReplayKit path is not wired to the media pipeline"
 
 grep -q "FullDisplayCaptureController" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Full-display ScreenCaptureKit path is not wired"
+
+grep -q "com.apple.broadcast-services-upload" BroadcastExtension/Info.plist   || fail "Broadcast upload extension point is missing"
+
+grep -q "RPBroadcastProcessModeSampleBuffer" BroadcastExtension/Info.plist   || fail "ReplayKit sample-buffer process mode is missing"
+
+grep -q "RPSystemBroadcastPickerView" Features/ScreenCapture/LegacyBroadcastPickerView.swift   || fail "System broadcast picker is missing"
+
+grep -q "LiveCaptureAirPlayBridge" BroadcastExtension/SampleHandler.swift   || fail "Broadcast extension is not wired to the HLS bridge"
 
 grep -q "AirPlay Playback Probe" Core/ProjectReadiness.swift   || fail "AirPlay playback probe is not represented in readiness"
 
