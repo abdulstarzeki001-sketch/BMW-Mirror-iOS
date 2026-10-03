@@ -22,7 +22,13 @@ final class LiveHLSHTTPServer {
         guard listener == nil else { return }
 
         do {
-            let listener = try NWListener(using: .tcp, on: .any)
+            let parameters = NWParameters.tcp
+            parameters.includePeerToPeer = true
+
+            let listener = try NWListener(
+                using: parameters,
+                on: .any
+            )
             self.listener = listener
 
             listener.stateUpdateHandler = { [weak self, weak listener] state in
