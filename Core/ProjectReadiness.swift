@@ -77,6 +77,12 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
+                id: "device-signing-prep",
+                title: "Physical Device Signing Prep",
+                detail: "device-build.sh جاهز ويمنع تفعيل entitlement الحقيقي قبل موافقة Apple",
+                isReady: true
+            ),
+            .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
                 detail: "الاختبار البرمجي مجهز؛ المتبقي تشغيله على مستقبل AirPlay فعلي",
