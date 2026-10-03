@@ -21,6 +21,9 @@
 		A00000000000000000000012 /* ReadinessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000014 /* ReadinessView.swift */; };
 		A00000000000000000000013 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000015 /* CaptureMode.swift */; };
 		A00000000000000000000014 /* FullDisplayCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* FullDisplayCaptureController.swift */; };
+		A00000000000000000000015 /* AirPlayVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000017 /* AirPlayVideoManager.swift */; };
+		A00000000000000000000016 /* AirPlayRoutePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000018 /* AirPlayRoutePicker.swift */; };
+		A00000000000000000000017 /* AirPlayProbeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000019 /* AirPlayProbeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,9 @@
 		B00000000000000000000014 /* ReadinessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Home/ReadinessView.swift; sourceTree = "<group>"; };
 		B00000000000000000000015 /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/ScreenCapture/CaptureMode.swift; sourceTree = "<group>"; };
 		B00000000000000000000016 /* FullDisplayCaptureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/ScreenCapture/FullDisplayCaptureController.swift; sourceTree = "<group>"; };
+		B00000000000000000000017 /* AirPlayVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayVideoManager.swift; sourceTree = "<group>"; };
+		B00000000000000000000018 /* AirPlayRoutePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayRoutePicker.swift; sourceTree = "<group>"; };
+		B00000000000000000000019 /* AirPlayProbeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayProbeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,9 @@
 				B00000000000000000000014 /* ReadinessView.swift */,
 				B00000000000000000000015 /* CaptureMode.swift */,
 				B00000000000000000000016 /* FullDisplayCaptureController.swift */,
+				B00000000000000000000017 /* AirPlayVideoManager.swift */,
+				B00000000000000000000018 /* AirPlayRoutePicker.swift */,
+				B00000000000000000000019 /* AirPlayProbeView.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,6 +174,9 @@
 				A00000000000000000000012 /* ReadinessView.swift in Sources */,
 				A00000000000000000000013 /* CaptureMode.swift in Sources */,
 				A00000000000000000000014 /* FullDisplayCaptureController.swift in Sources */,
+				A00000000000000000000015 /* AirPlayVideoManager.swift in Sources */,
+				A00000000000000000000016 /* AirPlayRoutePicker.swift in Sources */,
+				A00000000000000000000017 /* AirPlayProbeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
