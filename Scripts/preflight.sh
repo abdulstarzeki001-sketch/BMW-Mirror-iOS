@@ -166,3 +166,6 @@ print("✅ Plists and deferred entitlement example are structurally valid")
 PY
 
 echo "✅ BMW Mirror preflight completed successfully"
+
+
+bash Scripts/playground-preflight.sh
