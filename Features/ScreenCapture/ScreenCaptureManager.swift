@@ -28,6 +28,14 @@ final class ScreenCaptureManager: ObservableObject {
     @Published private(set) var liveHLSSegmentCount = 0
     @Published private(set) var liveHLSBytes = 0
     @Published private(set) var liveHLSReady = false
+    @Published private(set) var liveHLSFirstReadyLatencyText = "—"
+    @Published private(set) var liveHLSTotalRequests = 0
+    @Published private(set) var liveHLSPlaylistRequests = 0
+    @Published private(set) var liveHLSMediaRequests = 0
+    @Published private(set) var liveHLSExternalClientRequests = 0
+    @Published private(set) var liveHLSServedBytes = 0
+    @Published private(set) var liveHLSLastClientEndpoint = "—"
+    @Published private(set) var liveHLSLastRequestPath = "—"
 
     let targetFPS = 30
 
@@ -51,6 +59,15 @@ final class ScreenCaptureManager: ObservableObject {
                 self.liveHLSSegmentCount = snapshot.segmentCount
                 self.liveHLSBytes = snapshot.totalBytes
                 self.liveHLSReady = snapshot.isReadyForPlayback
+                self.liveHLSFirstReadyLatencyText = snapshot.firstReadyLatencyMilliseconds
+                    .map { String(format: "%.0f ms", $0) } ?? "—"
+                self.liveHLSTotalRequests = snapshot.totalHTTPRequests
+                self.liveHLSPlaylistRequests = snapshot.playlistRequests
+                self.liveHLSMediaRequests = snapshot.mediaRequests
+                self.liveHLSExternalClientRequests = snapshot.externalClientRequests
+                self.liveHLSServedBytes = snapshot.servedBytes
+                self.liveHLSLastClientEndpoint = snapshot.lastClientEndpoint
+                self.liveHLSLastRequestPath = snapshot.lastRequestPath
             }
         }
 
@@ -338,6 +355,14 @@ final class ScreenCaptureManager: ObservableObject {
         liveHLSSegmentCount = 0
         liveHLSBytes = 0
         liveHLSReady = false
+        liveHLSFirstReadyLatencyText = "—"
+        liveHLSTotalRequests = 0
+        liveHLSPlaylistRequests = 0
+        liveHLSMediaRequests = 0
+        liveHLSExternalClientRequests = 0
+        liveHLSServedBytes = 0
+        liveHLSLastClientEndpoint = "—"
+        liveHLSLastRequestPath = "—"
     }
 
     private func finishStoppedState() {
