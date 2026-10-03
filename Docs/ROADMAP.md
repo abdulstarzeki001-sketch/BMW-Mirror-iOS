@@ -92,6 +92,20 @@
 - Confirm Live HLS is reachable on-device
 - Preserve the exported report for comparison with the AirPlay/BMW test
 
+## ✅ Stage 12A — Physical Device Signing Preparation
+- Added guarded `Scripts/device-build.sh`
+- Uses automatic signing with a caller-supplied `DEVELOPMENT_TEAM`
+- Builds the host app + embedded Broadcast Upload Extension for physical iOS
+- Runs preflight before signing
+- Refuses to build if the real CarPlay entitlement file is prematurely attached
+- Stores no signing secrets in the repository
+
+## 🟡 Stage 12B — Signed Physical iPhone Run
+- Sign/install through Xcode on a real iPhone
+- Run Device Validation Center
+- Validate the embedded Broadcast Upload Extension at runtime
+- Keep CarPlay Video entitlement disabled until Apple approval
+
 ## 🟡 Stage 10C — Physical External AirPlay Validation
 - Run the validation toolkit against a real AirPlay video receiver
 - Confirm `isExternalPlaybackActive == true`
