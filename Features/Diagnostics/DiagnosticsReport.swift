@@ -56,7 +56,15 @@ enum DiagnosticsReport {
         Live HLS Segments: \(captureManager.liveHLSSegmentCount)
         Live HLS Bytes: \(captureManager.liveHLSBytes)
         Live HLS URL: \(captureManager.liveHLSPlaybackURL?.absoluteString ?? "—")
-        External Live AirPlay Validation: NOT RUN
+        First-ready latency: \(captureManager.liveHLSFirstReadyLatencyText)
+        HLS HTTP requests: \(captureManager.liveHLSTotalRequests)
+        HLS playlist requests: \(captureManager.liveHLSPlaylistRequests)
+        HLS media requests: \(captureManager.liveHLSMediaRequests)
+        HLS likely-external requests: \(captureManager.liveHLSExternalClientRequests)
+        HLS served bytes: \(captureManager.liveHLSServedBytes)
+        HLS last client: \(captureManager.liveHLSLastClientEndpoint)
+        HLS last path: \(captureManager.liveHLSLastRequestPath)
+        External Live AirPlay Validation: TOOLKIT READY / DEVICE TEST NOT RUN
         Official Full-Display Capture Path: iOS 27+ ScreenCaptureKit
 
         BMW Physical Test
