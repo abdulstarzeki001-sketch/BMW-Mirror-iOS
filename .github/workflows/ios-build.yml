@@ -25,6 +25,18 @@ jobs:
       - name: Validate Xcode project
         run: xcodebuild -list -project BMWMirror.xcodeproj
 
+      - name: Build ReplayKit Broadcast Extension
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BMWMirror.xcodeproj \
+            -target BMWMirrorBroadcast \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            build
+
       - name: Build BMW Mirror for iOS Simulator
         run: |
           set -o pipefail
