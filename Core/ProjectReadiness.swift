@@ -25,7 +25,13 @@ enum ProjectReadiness {
             .init(
                 id: "legacy-full-display-broadcast",
                 title: "Legacy Full Display (iOS 17–26)",
-                detail: "يحتاج ReplayKit Broadcast Upload Extension + نقل الإطارات إلى التطبيق",
+                detail: "Broadcast Upload Extension + fixed-port HLS bridge تم بناؤهما",
+                isReady: true
+            ),
+            .init(
+                id: "legacy-full-display-device-test",
+                title: "Legacy Broadcast Device Test",
+                detail: "يحتاج تجربة فعلية على iPhone لأن ReplayKit system broadcast لا يُثبت داخل Simulator",
                 isReady: false
             ),
             .init(
