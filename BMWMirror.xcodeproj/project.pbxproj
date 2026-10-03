@@ -29,6 +29,8 @@
 		A00000000000000000000020 /* LiveHLSHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000022 /* LiveHLSHTTPServer.swift */; };
 		A00000000000000000000021 /* LiveCaptureAirPlayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */; };
 		A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000024 /* LiveAirPlayBridgeView.swift */; };
+		A00000000000000000000023 /* AirPlayValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000025 /* AirPlayValidationManager.swift */; };
+		A00000000000000000000024 /* AirPlayValidationReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000026 /* AirPlayValidationReport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +58,8 @@
 		B00000000000000000000022 /* LiveHLSHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveHLSHTTPServer.swift; sourceTree = "<group>"; };
 		B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveCaptureAirPlayBridge.swift; sourceTree = "<group>"; };
 		B00000000000000000000024 /* LiveAirPlayBridgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/LiveAirPlayBridgeView.swift; sourceTree = "<group>"; };
+		B00000000000000000000025 /* AirPlayValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayValidationManager.swift; sourceTree = "<group>"; };
+		B00000000000000000000026 /* AirPlayValidationReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/AirPlay/AirPlayValidationReport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +99,8 @@
 				B00000000000000000000022 /* LiveHLSHTTPServer.swift */,
 				B00000000000000000000023 /* LiveCaptureAirPlayBridge.swift */,
 				B00000000000000000000024 /* LiveAirPlayBridgeView.swift */,
+				B00000000000000000000025 /* AirPlayValidationManager.swift */,
+				B00000000000000000000026 /* AirPlayValidationReport.swift */,
 				C00000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -197,6 +203,8 @@
 				A00000000000000000000020 /* LiveHLSHTTPServer.swift in Sources */,
 				A00000000000000000000021 /* LiveCaptureAirPlayBridge.swift in Sources */,
 				A00000000000000000000022 /* LiveAirPlayBridgeView.swift in Sources */,
+				A00000000000000000000023 /* AirPlayValidationManager.swift in Sources */,
+				A00000000000000000000024 /* AirPlayValidationReport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
