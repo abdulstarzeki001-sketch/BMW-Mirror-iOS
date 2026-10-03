@@ -72,8 +72,15 @@ grep -q "processReplayKitVideoSampleBuffer" Features/ScreenCapture/ScreenCapture
 
 grep -q "FullDisplayCaptureController" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Full-display ScreenCaptureKit path is not wired"
 
-grep -q "AirPlay Video Output" Core/ProjectReadiness.swift   || fail "AirPlay output blocker is not represented in readiness"
-pass "Capture paths and AirPlay blocker are represented honestly"
+grep -q "AirPlay Playback Probe" Core/ProjectReadiness.swift   || fail "AirPlay playback probe is not represented in readiness"
+
+grep -q "Live Capture → AirPlay Bridge" Core/ProjectReadiness.swift   || fail "Live capture to AirPlay blocker is not represented in readiness"
+
+grep -q "allowsExternalPlayback = true" Features/AirPlay/AirPlayVideoManager.swift   || fail "AVPlayer external playback is not enabled"
+
+grep -q "prioritizesVideoDevices = true" Features/AirPlay/AirPlayRoutePicker.swift   || fail "AirPlay route picker is not prioritizing video devices"
+
+pass "Capture paths, AirPlay probe and live bridge blocker are represented honestly"
 
 python3 - <<'PY'
 import plistlib
