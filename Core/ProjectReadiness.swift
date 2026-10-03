@@ -53,9 +53,15 @@ enum ProjectReadiness {
                 isReady: true
             ),
             .init(
-                id: "capture-airplay-bridge",
-                title: "Live Capture → AirPlay Bridge",
-                detail: "تحويل خرج الالتقاط الحي إلى فيديو AirPlay فعلي لم يُنفذ بعد",
+                id: "live-hls-bridge",
+                title: "Live Capture → HLS Bridge",
+                detail: "AVAssetWriter ينتج fragmented MP4/HLS وخادم HTTP محلي يقدمه لـ AVPlayer",
+                isReady: true
+            ),
+            .init(
+                id: "external-live-airplay",
+                title: "Live HLS → External AirPlay",
+                detail: "المسار البرمجي موجود لكن يحتاج اختبار جهاز AirPlay فعلي للتأكد من وصول المستقبل إلى الخادم المحلي",
                 isReady: false
             ),
             .init(
