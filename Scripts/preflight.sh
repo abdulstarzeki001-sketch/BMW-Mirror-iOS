@@ -15,6 +15,7 @@ required_files=(
   "BMWMirrorApp/Info.plist"
   "BMWMirrorApp/BMWMirrorApp.swift"
   "BMWMirrorApp/BMWMirror.entitlements.example"
+  "Scripts/device-build.sh"
   "BroadcastExtension/Info.plist"
   "BroadcastExtension/SampleHandler.swift"
   "Core/AppConstants.swift"
@@ -66,6 +67,14 @@ if grep -q "CODE_SIGN_ENTITLEMENTS = BMWMirrorApp/BMWMirror.entitlements;" BMWMi
   fail "Real entitlement is active before Apple approval"
 fi
 pass "Real CarPlay entitlement is intentionally deferred"
+
+grep -q "DEVELOPMENT_TEAM" Scripts/device-build.sh \
+  || fail "Physical-device build script does not require a development team"
+grep -q -- "-allowProvisioningUpdates" Scripts/device-build.sh \
+  || fail "Physical-device build script is missing automatic provisioning support"
+grep -q "Refusing device build" Scripts/device-build.sh \
+  || fail "Physical-device build script lacks the entitlement safety guard"
+pass "Physical-device signing preparation is guarded"
 
 required_sources=(
   "CarPlaySceneDelegate.swift in Sources"
