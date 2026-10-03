@@ -29,6 +29,10 @@ required_files=(
   "Features/AirPlay/AirPlayRoutePicker.swift"
   "Features/AirPlay/AirPlayProbeView.swift"
   "Features/AirPlay/LiveHLSStore.swift"
+  "Features/AirPlay/LiveHLSSegmenter.swift"
+  "Features/AirPlay/LiveHLSHTTPServer.swift"
+  "Features/AirPlay/LiveCaptureAirPlayBridge.swift"
+  "Features/AirPlay/LiveAirPlayBridgeView.swift"
 )
 
 for file in "${required_files[@]}"; do
@@ -63,6 +67,10 @@ required_sources=(
   "AirPlayRoutePicker.swift in Sources"
   "AirPlayProbeView.swift in Sources"
   "LiveHLSStore.swift in Sources"
+  "LiveHLSSegmenter.swift in Sources"
+  "LiveHLSHTTPServer.swift in Sources"
+  "LiveCaptureAirPlayBridge.swift in Sources"
+  "LiveAirPlayBridgeView.swift in Sources"
 )
 
 for source in "${required_sources[@]}"; do
@@ -76,7 +84,9 @@ grep -q "FullDisplayCaptureController" Features/ScreenCapture/ScreenCaptureManag
 
 grep -q "AirPlay Playback Probe" Core/ProjectReadiness.swift   || fail "AirPlay playback probe is not represented in readiness"
 
-grep -q "Live Capture → AirPlay Bridge" Core/ProjectReadiness.swift   || fail "Live capture to AirPlay blocker is not represented in readiness"
+grep -q "Live Capture → HLS Bridge" Core/ProjectReadiness.swift   || fail "Live capture to HLS bridge is not represented in readiness"
+
+grep -q "Live HLS → External AirPlay" Core/ProjectReadiness.swift   || fail "External AirPlay validation blocker is not represented in readiness"
 
 grep -q "allowsExternalPlayback = true" Features/AirPlay/AirPlayVideoManager.swift   || fail "AVPlayer external playback is not enabled"
 
