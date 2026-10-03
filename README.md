@@ -130,3 +130,24 @@ DEVELOPMENT_TEAM=YOUR_TEAM_ID bash Scripts/device-build.sh
 ## حدود الحالة الحالية
 
 المشروع صار يملك المسارات البرمجية الأساسية، لكنه **ليس مثبتًا بعد كتطبيق mirroring ناجح على BMW**. ما زال مطلوبًا اختبار AirPlay/ReplayKit على جهاز حقيقي، ثم CarPlay Video entitlement، ثم اختبار BMW X6 2025 مع السيارة متوقفة وحسب القيود التي يفرضها النظام والسيارة.
+
+
+## iPad / Swift Playgrounds
+
+للتطوير والاختبار بدون Mac يوجد App Playground مستقل:
+
+`Playgrounds/BMWMirrorPad.swiftpm`
+
+يعمل على iPad داخل Swift Playgrounds ويختبر:
+
+- Apple HLS playback
+- Custom HLS URL
+- AirPlay route picker
+- `AVPlayer.isExternalPlaybackActive`
+- HLS reachability + latency
+- playback stalls / keep-up
+- AVRouteDetector / AVAudioSession route
+- Network.framework diagnostics
+- تقرير اختبار قابل للمشاركة
+
+هذا الـHarness لا يستبدل مشروع Xcode الكامل، ولا يحتوي على Broadcast Upload Extension أو CarPlay entitlement. هدفه أن يسمح باختبار HLS/AirPlay والشبكة مباشرة من iPad.
