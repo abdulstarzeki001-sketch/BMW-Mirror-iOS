@@ -77,6 +77,15 @@ struct HomeView: View {
                     .buttonStyle(.bordered)
 
                     NavigationLink {
+                        LiveAirPlayBridgeView(captureManager: captureManager)
+                    } label: {
+                        Label("Live Capture → AirPlay", systemImage: "dot.radiowaves.left.and.right")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+
+                    NavigationLink {
                         ReadinessView()
                     } label: {
                         Label("جاهزية المشروع", systemImage: "checklist")
