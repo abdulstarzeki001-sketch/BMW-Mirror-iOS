@@ -20,6 +20,7 @@ struct LiveCaptureBridgeSnapshot {
 
 final class LiveCaptureAirPlayBridge {
     var onUpdate: ((LiveCaptureBridgeSnapshot) -> Void)?
+    var onError: ((Error) -> Void)?
 
     private let store = LiveHLSStore(maxSegments: 8)
     private let serverPort: NWEndpoint.Port
@@ -54,6 +55,7 @@ final class LiveCaptureAirPlayBridge {
 
         segmenter.onError = { [weak self] error in
             self?.setStatus("HLS Encoder: \(error.localizedDescription)")
+            self?.onError?(error)
         }
 
         server.onReady = { [weak self] url in
@@ -79,6 +81,7 @@ final class LiveCaptureAirPlayBridge {
 
         server.onError = { [weak self] error in
             self?.setStatus("HLS Server: \(error.localizedDescription)")
+            self?.onError?(error)
         }
     }
 
