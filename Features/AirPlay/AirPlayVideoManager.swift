@@ -6,17 +6,41 @@ final class AirPlayVideoManager: ObservableObject {
     @Published private(set) var statusText = "جاهز لاختبار AirPlay"
     @Published private(set) var isPlaying = false
     @Published private(set) var isExternalPlaybackActive = false
+    @Published private(set) var isPlaybackLikelyToKeepUp = false
+    @Published private(set) var playbackStallCount = 0
     @Published private(set) var playerItemStatusText = "لم يبدأ"
     @Published private(set) var currentSourceLabel = "لا يوجد مصدر"
+    @Published private(set) var externalPlaybackTransitionText = "لم يبدأ"
     @Published private(set) var errorText: String?
 
     let player = AVPlayer()
 
     private var timer: Timer?
     private var currentItemObservation: NSKeyValueObservation?
+    private var stalledObserver: NSObjectProtocol?
+    private var previousExternalPlaybackState = false
 
     init(prepareProbeOnInit: Bool = true) {
         configurePlayer()
+
+        stalledObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemPlaybackStalled,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            Task { @MainActor [weak self] in
+                guard
+                    let self,
+                    let item = notification.object as? AVPlayerItem,
+                    item === self.player.currentItem
+                else {
+                    return
+                }
+
+                self.playbackStallCount += 1
+                self.statusText = "توقف مؤقت في تدفق الفيديو"
+            }
+        }
 
         if prepareProbeOnInit {
             prepareProbe()
@@ -28,6 +52,10 @@ final class AirPlayVideoManager: ObservableObject {
     deinit {
         timer?.invalidate()
         currentItemObservation?.invalidate()
+
+        if let stalledObserver {
+            NotificationCenter.default.removeObserver(stalledObserver)
+        }
     }
 
     func prepareProbe() {
@@ -46,8 +74,13 @@ final class AirPlayVideoManager: ObservableObject {
     func load(url: URL, label: String) {
         errorText = nil
         currentSourceLabel = label
+        playbackStallCount = 0
+        previousExternalPlaybackState = false
+        externalPlaybackTransitionText = "لم يبدأ"
 
         let item = AVPlayerItem(url: url)
+        item.preferredForwardBufferDuration = 1.5
+
         observe(item: item)
         player.replaceCurrentItem(with: item)
 
@@ -75,6 +108,15 @@ final class AirPlayVideoManager: ObservableObject {
     func refreshState() {
         isPlaying = player.timeControlStatus == .playing
         isExternalPlaybackActive = player.isExternalPlaybackActive
+        isPlaybackLikelyToKeepUp = player.currentItem?.isPlaybackLikelyToKeepUp ?? false
+
+        if isExternalPlaybackActive != previousExternalPlaybackState {
+            previousExternalPlaybackState = isExternalPlaybackActive
+
+            externalPlaybackTransitionText = isExternalPlaybackActive
+                ? "تفعّل External Playback عند \(Self.clockText())"
+                : "توقف External Playback عند \(Self.clockText())"
+        }
 
         if isExternalPlaybackActive {
             statusText = "AirPlay Video خارجي نشط"
@@ -142,5 +184,11 @@ final class AirPlayVideoManager: ObservableObject {
                 self?.refreshState()
             }
         }
+    }
+
+    private static func clockText() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter.string(from: Date())
     }
 }
