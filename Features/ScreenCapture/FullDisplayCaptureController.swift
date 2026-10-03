@@ -6,6 +6,8 @@ import ScreenCaptureKit
 @available(iOS 27.0, *)
 final class FullDisplayCaptureController: NSObject {
     var onFrame: ((MediaVideoFrame) -> Void)?
+    var onVideoSampleBuffer: ((CMSampleBuffer) -> Void)?
+    var onAudioSampleBuffer: ((CMSampleBuffer) -> Void)?
     var onAudioPacketCount: ((Int) -> Void)?
     var onStateChange: ((String) -> Void)?
     var onStarted: (() -> Void)?
@@ -143,10 +145,12 @@ extension FullDisplayCaptureController: SCStreamOutput {
         switch type {
         case .screen:
             if let frame = mediaPipeline.processScreenCaptureKitVideoSampleBuffer(sampleBuffer) {
+                onVideoSampleBuffer?(sampleBuffer)
                 onFrame?(frame)
             }
 
         case .audio:
+            onAudioSampleBuffer?(sampleBuffer)
             let metrics = mediaPipeline.inspectAudioSampleBuffer(sampleBuffer)
             onAudioPacketCount?(metrics.packetCount)
 
