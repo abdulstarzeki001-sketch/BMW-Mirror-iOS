@@ -26,6 +26,11 @@
     <true/>
     <key>NSLocalNetworkUsageDescription</key>
     <string>BMW Mirror uses the local network to expose the live HLS video stream to AirPlay-capable receivers.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
