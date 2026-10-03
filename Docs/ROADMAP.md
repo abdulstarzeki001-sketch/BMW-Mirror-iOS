@@ -76,6 +76,22 @@
 - Monitor Network.framework path/interfaces
 - Generate a shareable AirPlay validation report
 
+## ✅ Stage 11A — Pre-Entitlement Device Validation Center
+- Detect Simulator vs physical iPhone
+- Verify embedded `BMWMirrorBroadcast.appex`
+- Select the expected capture path for the running iOS version
+- Check local IPv4 availability
+- Probe current Live HLS playlist when available
+- Surface CarPlay app-scene state without treating it as video proof
+- Generate a shareable device validation report
+
+## 🟡 Stage 11B — Physical iPhone Validation
+- Run Device Validation Center on a real iPhone
+- Confirm the embedded broadcast extension is discoverable at runtime
+- Confirm full-display capture for the current iOS version
+- Confirm Live HLS is reachable on-device
+- Preserve the exported report for comparison with the AirPlay/BMW test
+
 ## 🟡 Stage 10C — Physical External AirPlay Validation
 - Run the validation toolkit against a real AirPlay video receiver
 - Confirm `isExternalPlaybackActive == true`
