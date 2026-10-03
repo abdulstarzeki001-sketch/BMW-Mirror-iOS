@@ -4,6 +4,7 @@ import AVKit
 struct LiveAirPlayBridgeView: View {
     @ObservedObject var captureManager: ScreenCaptureManager
     @StateObject private var playerManager = AirPlayVideoManager(prepareProbeOnInit: false)
+    @StateObject private var validationManager = AirPlayValidationManager()
 
     var body: some View {
         ScrollView {
@@ -12,32 +13,61 @@ struct LiveAirPlayBridgeView: View {
                     .font(.title2.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text("BMW Mirror يحول الإطارات الحية إلى fragmented MP4/HLS داخل التطبيق، ويقدّمها عبر خادم HTTP محلي ليتم تشغيلها بواسطة AVPlayer ثم اختيار AirPlay.")
+                Text("المسار الحالي: Capture → HLS → AVPlayer → AirPlay. هذه الصفحة تعرض مؤشرات فعلية تساعدنا نعرف هل مستقبل AirPlay الخارجي وصل إلى البث أم لا.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                bridgeStatusCard
+                validationStatusCard
 
                 VideoPlayer(player: playerManager.player)
                     .frame(maxWidth: .infinity)
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
-                VStack(spacing: 12) {
+                SectionCard(title: "Live HLS") {
                     row("Capture", captureManager.isCapturing ? "يعمل" : "متوقف")
-                    row("HLS Bridge", captureManager.liveBridgeStatusText)
+                    row("Bridge", captureManager.liveBridgeStatusText)
+                    row("First ready", captureManager.liveHLSFirstReadyLatencyText)
                     row("Segments", "\(captureManager.liveHLSSegmentCount)")
                     row("Buffer", byteText(captureManager.liveHLSBytes))
+                    row("HTTP requests", "\(captureManager.liveHLSTotalRequests)")
+                    row("Playlist requests", "\(captureManager.liveHLSPlaylistRequests)")
+                    row("Media requests", "\(captureManager.liveHLSMediaRequests)")
+                    row("External-client requests", "\(captureManager.liveHLSExternalClientRequests)")
+                    row("Served", byteText(captureManager.liveHLSServedBytes))
+                    row("Last client", captureManager.liveHLSLastClientEndpoint)
+                    row("Last path", captureManager.liveHLSLastRequestPath)
+                }
+
+                SectionCard(title: "AVPlayer / AirPlay") {
                     row("Player Item", playerManager.playerItemStatusText)
+                    row("Playback", playerManager.isPlaying ? "يعمل" : "متوقف")
+                    row(
+                        "Keep Up",
+                        playerManager.isPlaybackLikelyToKeepUp ? "نعم" : "لا"
+                    )
+                    row("Stalls", "\(playerManager.playbackStallCount)")
                     row(
                         "External Playback",
                         playerManager.isExternalPlaybackActive ? "نشط" : "غير نشط"
                     )
+                    row(
+                        "External transition",
+                        playerManager.externalPlaybackTransitionText
+                    )
                 }
-                .padding()
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                SectionCard(title: "Route / Network") {
+                    row("Route detector", validationManager.routeDetectionText)
+                    row(
+                        "Multiple routes",
+                        validationManager.multipleRoutesDetected ? "نعم" : "لا"
+                    )
+                    row("Audio route", validationManager.currentAudioRouteText)
+                    row("Network path", validationManager.networkPathText)
+                    row("Interfaces", validationManager.networkInterfacesText)
+                }
 
                 if let url = captureManager.liveHLSPlaybackURL {
                     Text(url.absoluteString)
@@ -98,6 +128,19 @@ struct LiveAirPlayBridgeView: View {
                 }
                 .buttonStyle(.bordered)
 
+                ShareLink(
+                    item: AirPlayValidationReport.make(
+                        captureManager: captureManager,
+                        playerManager: playerManager,
+                        validationManager: validationManager
+                    )
+                ) {
+                    Label("مشاركة تقرير AirPlay", systemImage: "square.and.arrow.up")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.bordered)
+
                 if let errorText = playerManager.errorText {
                     Text(errorText)
                         .font(.footnote)
@@ -108,14 +151,14 @@ struct LiveAirPlayBridgeView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
 
-                Text("هذه مرحلة Bridge تجريبية. نجاح التشغيل داخل AVPlayer لا يثبت أن مستقبل AirPlay في السيارة يستطيع الوصول إلى خادم HLS المحلي؛ لذلك لا نعتبر CarPlay mirroring مكتملًا إلا بعد اختبار External Playback على جهاز فعلي.")
+                Text("إشارة النجاح القوية عند الاختبار الفعلي: External Playback يصبح نشطًا، وبنفس الوقت نرى طلبات HTTP من عميل خارجي أو دليل تشغيل من جهة المستقبل. بدون ذلك لا نعتبر الربط مع السيارة مثبتًا.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
         }
-        .navigationTitle("Live AirPlay Bridge")
+        .navigationTitle("Live AirPlay Validation")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             if captureManager.liveHLSReady {
@@ -132,24 +175,42 @@ struct LiveAirPlayBridgeView: View {
         }
     }
 
-    private var bridgeStatusCard: some View {
-        HStack(spacing: 14) {
+    private var validationStatusCard: some View {
+        let strongSignal =
+            playerManager.isExternalPlaybackActive &&
+            captureManager.liveHLSExternalClientRequests > 0
+
+        let partialSignal =
+            playerManager.isExternalPlaybackActive ||
+            captureManager.liveHLSExternalClientRequests > 0
+
+        return HStack(spacing: 14) {
             Image(
-                systemName: captureManager.liveHLSReady
-                    ? "checkmark.circle.fill"
-                    : "clock.fill"
+                systemName: strongSignal
+                    ? "checkmark.seal.fill"
+                    : partialSignal
+                        ? "exclamationmark.triangle.fill"
+                        : "clock.fill"
             )
             .font(.title2)
-            .foregroundStyle(captureManager.liveHLSReady ? .green : .orange)
+            .foregroundStyle(
+                strongSignal
+                    ? .green
+                    : partialSignal
+                        ? .orange
+                        : .secondary
+            )
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Live HLS")
+                Text("External AirPlay Validation")
                     .font(.headline)
 
                 Text(
-                    captureManager.liveHLSReady
-                        ? "جاهز لـ AVPlayer"
-                        : "بانتظار أول HLS segment"
+                    strongSignal
+                        ? "مؤشرات قوية على تشغيل خارجي"
+                        : partialSignal
+                            ? "إشارة جزئية — نحتاج تأكيد إضافي"
+                            : "بانتظار اختبار مستقبل AirPlay"
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -179,14 +240,43 @@ struct LiveAirPlayBridgeView: View {
     }
 
     private func row(_ title: String, _ value: String) -> some View {
-        HStack {
+        HStack(alignment: .top) {
             Text(title)
                 .foregroundStyle(.secondary)
-            Spacer()
+
+            Spacer(minLength: 16)
+
             Text(value)
                 .multilineTextAlignment(.trailing)
+                .textSelection(.enabled)
         }
         .font(.footnote)
+    }
+}
+
+private struct SectionCard<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    init(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            content
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }
 
