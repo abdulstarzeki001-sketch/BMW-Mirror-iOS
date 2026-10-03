@@ -7,19 +7,18 @@
 - ✅ مشروع SwiftUI/Xcode — **Build ناجح في CI**
 - ✅ اكتشاف مشهد CarPlay الخاص بالتطبيق
 - ✅ ReplayKit لالتقاط محتوى BMW Mirror نفسه
-- 🟡 iOS 17–26: الالتقاط الكامل يحتاج **ReplayKit Broadcast Upload Extension** ولم يُنفذ بعد
-- ✅ iOS 27+: ScreenCaptureKit full-display path موجود
+- 🟡 iOS 17–26: الالتقاط الكامل يحتاج **ReplayKit Broadcast Upload Extension**
+- ✅ iOS 27+: ScreenCaptureKit full-display path
 - ✅ Media Pipeline + FPS/latency/diagnostics
 - ✅ CarPlay template scene
-- 🟡 **AirPlay Video output غير منفذ بعد**
+- ✅ AirPlay playback probe
+- ✅ **Live Capture → fragmented MP4/HLS bridge**
+- ✅ Local HLS HTTP server + AVPlayer live playback path
+- 🟡 **External AirPlay validation للـ Live HLS لم يتم بعد**
 - 🟡 CarPlay Video entitlement غير مفعّل
 - 🟡 اختبار BMW X6 2025 لم يتم بعد
 
-> مهم: `RPScreenRecorder.startCapture` ليس Screen Mirroring كامل لكل تطبيقات iPhone. للأنظمة الأقدم يمكن استخدام ReplayKit Broadcast Upload Extension الذي يستقبل video/audio sample buffers أثناء البث، لكنه أصبح مسارًا قديمًا واستبدلته Apple بـ ScreenCaptureKit في الأنظمة الأحدث.
-
-## المسار المستهدف
-
-### iOS 27+
+## المسار الحالي لـ iOS 27+
 
 ```text
 iPhone full display
@@ -28,51 +27,64 @@ ScreenCaptureKit
     ↓
 Media Pipeline
     ↓
-AirPlay Video output   ← blocker الحالي
+AVAssetWriter
+    ↓
+fragmented MP4 / Apple HLS
+    ↓
+Rolling HLS playlist
+    ↓
+Local HTTP server
+    ↓
+AVPlayer
+    ↓
+AirPlay route picker
+    ↓
+External AirPlay validation  ← المرحلة الحالية
     ↓
 CarPlay Video entitlement
     ↓
-Supported vehicle / BMW test
+BMW X6 test
 ```
 
-### iOS 17–26 compatibility
+Apple HLS segment generation في المشروع يستخدم `AVAssetWriter.outputFileTypeProfile = .mpeg4AppleHLS` ومقاطع قصيرة لتقليل التأخير.
+
+## iOS 17–26 compatibility
 
 ```text
 System Broadcast Picker
     ↓
-ReplayKit Broadcast Upload Extension
+ReplayKit Broadcast Upload Extension   ← لم يُنفذ بعد
     ↓
 Frame transport to BMW Mirror
     ↓
-Media / AirPlay Video output
+Live HLS bridge
     ↓
-CarPlay / BMW test
+AirPlay / CarPlay
 ```
 
 ## فتح المشروع
 
 افتح `BMWMirror.xcodeproj`، اختر iPhone Simulator ثم Run.
 
+## اختبار Live AirPlay Bridge
+
+من الصفحة الرئيسية:
+
+1. ابدأ Screen Capture.
+2. افتح **Live Capture → AirPlay**.
+3. انتظر حتى تصبح حالة **Live HLS = جاهز لـ AVPlayer**.
+4. اضغط **تحميل البث الحي**.
+5. شغّل الفيديو محليًا.
+6. استخدم زر AirPlay لاختيار مستقبل فيديو.
+
+نجاح الفيديو داخل AVPlayer لا يعني تلقائيًا نجاح المستقبل الخارجي؛ يجب اختبار `isExternalPlaybackActive` على جهاز فعلي.
+
 ## Bundle ID
 
 `com.abdulstar.bmwmirror`
-
-## البنية
-
-- `BMWMirror.xcodeproj/`
-- `BMWMirrorApp/`
-- `Core/`
-- `Features/Home/`
-- `Features/ScreenCapture/`
-- `Features/Media/`
-- `Features/CarPlay/`
-- `Features/Diagnostics/`
-- `UI/`
-- `Scripts/`
-- `Docs/`
 
 ## قبل الدفع
 
 شغّل `bash Scripts/preflight.sh`.
 
-لا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل موافقة Apple، ولا تعتبر المشروع جاهزًا للسيارة قبل نجاح AirPlay Video output.
+لا تربط `BMWMirror.entitlements` الحقيقي بالتوقيع قبل موافقة Apple، ولا تعتبر المشروع جاهزًا للسيارة قبل نجاح External AirPlay على البث الحي.
