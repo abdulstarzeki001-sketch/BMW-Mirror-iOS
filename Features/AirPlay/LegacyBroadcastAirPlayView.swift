@@ -46,14 +46,14 @@ struct LegacyBroadcastAirPlayView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
                 VStack(spacing: 12) {
-                    row("Broadcast port", "(AppConstants.legacyBroadcastPort)")
+                    row("Broadcast port", "\(AppConstants.legacyBroadcastPort)")
                     row("Live URL", liveURL?.absoluteString ?? "—")
                     row("Player", playerManager.playerItemStatusText)
                     row(
                         "External Playback",
                         playerManager.isExternalPlaybackActive ? "نشط" : "غير نشط"
                     )
-                    row("Stalls", "(playerManager.playbackStallCount)")
+                    row("Stalls", "\(playerManager.playbackStallCount)")
                     row("Route", validationManager.currentAudioRouteText)
                     row("Network", validationManager.networkPathText)
                     row("Interfaces", validationManager.networkInterfacesText)
@@ -136,7 +136,7 @@ struct LegacyBroadcastAirPlayView: View {
         guard
             let host = LiveHLSHTTPServer.preferredLocalIPv4Address(),
             let url = URL(
-                string: "http://(host):(AppConstants.legacyBroadcastPort)/live.m3u8"
+                string: "http://\(host):\(AppConstants.legacyBroadcastPort)/live.m3u8"
             )
         else {
             liveURL = nil
