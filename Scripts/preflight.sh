@@ -28,6 +28,7 @@ required_files=(
   "Features/AirPlay/AirPlayVideoManager.swift"
   "Features/AirPlay/AirPlayRoutePicker.swift"
   "Features/AirPlay/AirPlayProbeView.swift"
+  "Features/AirPlay/LiveHLSStore.swift"
 )
 
 for file in "${required_files[@]}"; do
@@ -61,6 +62,7 @@ required_sources=(
   "AirPlayVideoManager.swift in Sources"
   "AirPlayRoutePicker.swift in Sources"
   "AirPlayProbeView.swift in Sources"
+  "LiveHLSStore.swift in Sources"
 )
 
 for source in "${required_sources[@]}"; do
@@ -80,7 +82,13 @@ grep -q "allowsExternalPlayback = true" Features/AirPlay/AirPlayVideoManager.swi
 
 grep -q "prioritizesVideoDevices = true" Features/AirPlay/AirPlayRoutePicker.swift   || fail "AirPlay route picker is not prioritizing video devices"
 
-pass "Capture paths, AirPlay probe and live bridge blocker are represented honestly"
+grep -q "mpeg4AppleHLS" Features/AirPlay/LiveHLSSegmenter.swift   || fail "Live HLS segmenter is not using the Apple HLS profile"
+
+grep -q "NWListener" Features/AirPlay/LiveHLSHTTPServer.swift   || fail "Live HLS HTTP server is missing"
+
+grep -q "liveBridge.appendVideo" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Capture is not wired into the live HLS bridge"
+
+pass "Capture, HLS bridge and AirPlay playback paths are wired"
 
 python3 - <<'PY'
 import plistlib
