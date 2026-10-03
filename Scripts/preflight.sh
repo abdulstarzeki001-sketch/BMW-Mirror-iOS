@@ -33,6 +33,7 @@ required_files=(
   "Features/AirPlay/LiveHLSHTTPServer.swift"
   "Features/AirPlay/LiveCaptureAirPlayBridge.swift"
   "Features/AirPlay/LiveAirPlayBridgeView.swift"
+  "Features/AirPlay/AirPlayValidationManager.swift"
 )
 
 for file in "${required_files[@]}"; do
@@ -78,6 +79,7 @@ required_sources=(
   "LiveHLSHTTPServer.swift in Sources"
   "LiveCaptureAirPlayBridge.swift in Sources"
   "LiveAirPlayBridgeView.swift in Sources"
+  "AirPlayValidationManager.swift in Sources"
 )
 
 for source in "${required_sources[@]}"; do
@@ -105,7 +107,15 @@ grep -q "NWListener" Features/AirPlay/LiveHLSHTTPServer.swift   || fail "Live HL
 
 grep -q "liveBridge.appendVideo" Features/ScreenCapture/ScreenCaptureManager.swift   || fail "Capture is not wired into the live HLS bridge"
 
-pass "Capture, HLS bridge and AirPlay playback paths are wired"
+grep -q "AVRouteDetector" Features/AirPlay/AirPlayValidationManager.swift   || fail "AirPlay route validation monitor is missing"
+
+grep -q "externalClientRequests" Features/AirPlay/LiveHLSHTTPServer.swift   || fail "External HLS client metrics are missing"
+
+grep -q "AVPlayerItemPlaybackStalled" Features/AirPlay/AirPlayVideoManager.swift   || fail "Playback stall monitoring is missing"
+
+grep -q "AirPlayValidationReport" Features/AirPlay/LiveAirPlayBridgeView.swift   || fail "Shareable AirPlay validation report is not wired"
+
+pass "Capture, HLS bridge, AirPlay playback and validation tooling are wired"
 
 python3 - <<'PY'
 import plistlib
