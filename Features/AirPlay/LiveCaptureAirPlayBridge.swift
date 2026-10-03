@@ -7,6 +7,14 @@ struct LiveCaptureBridgeSnapshot {
     let segmentCount: Int
     let totalBytes: Int
     let isReadyForPlayback: Bool
+    let firstReadyLatencyMilliseconds: Double?
+    let totalHTTPRequests: Int
+    let playlistRequests: Int
+    let mediaRequests: Int
+    let externalClientRequests: Int
+    let servedBytes: Int
+    let lastClientEndpoint: String
+    let lastRequestPath: String
 }
 
 final class LiveCaptureAirPlayBridge {
@@ -19,9 +27,21 @@ final class LiveCaptureAirPlayBridge {
     private let lock = NSLock()
     private var playbackURL: URL?
     private var statusText = "غير مفعّل"
+    private var startedAt: Date?
+    private var firstReadyLatencyMilliseconds: Double?
+    private var serverStatistics = LiveHLSServerStatistics(
+        totalRequests: 0,
+        playlistRequests: 0,
+        mediaRequests: 0,
+        externalClientRequests: 0,
+        bytesServed: 0,
+        lastClientEndpoint: "—",
+        lastRequestPath: "—"
+    )
 
     init() {
         segmenter.onStatistics = { [weak self] _ in
+            self?.updateReadyLatencyIfNeeded()
             self?.publish()
         }
 
@@ -40,6 +60,16 @@ final class LiveCaptureAirPlayBridge {
             self.publish()
         }
 
+        server.onStatistics = { [weak self] statistics in
+            guard let self else { return }
+
+            self.lock.lock()
+            self.serverStatistics = statistics
+            self.lock.unlock()
+
+            self.publish()
+        }
+
         server.onError = { [weak self] error in
             self?.setStatus("HLS Server: \(error.localizedDescription)")
         }
@@ -49,6 +79,17 @@ final class LiveCaptureAirPlayBridge {
         lock.lock()
         statusText = "جارٍ تجهيز Live HLS…"
         playbackURL = nil
+        startedAt = Date()
+        firstReadyLatencyMilliseconds = nil
+        serverStatistics = LiveHLSServerStatistics(
+            totalRequests: 0,
+            playlistRequests: 0,
+            mediaRequests: 0,
+            externalClientRequests: 0,
+            bytesServed: 0,
+            lastClientEndpoint: "—",
+            lastRequestPath: "—"
+        )
         lock.unlock()
 
         segmenter.reset()
@@ -81,6 +122,21 @@ final class LiveCaptureAirPlayBridge {
         publish()
     }
 
+    private func updateReadyLatencyIfNeeded() {
+        guard store.isReadyForPlayback else { return }
+
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard firstReadyLatencyMilliseconds == nil,
+              let startedAt else {
+            return
+        }
+
+        firstReadyLatencyMilliseconds = Date()
+            .timeIntervalSince(startedAt) * 1000
+    }
+
     private func setStatus(_ value: String) {
         lock.lock()
         statusText = value
@@ -92,6 +148,8 @@ final class LiveCaptureAirPlayBridge {
         lock.lock()
         let status = statusText
         let url = playbackURL
+        let latency = firstReadyLatencyMilliseconds
+        let serverStats = serverStatistics
         lock.unlock()
 
         onUpdate?(
@@ -100,7 +158,15 @@ final class LiveCaptureAirPlayBridge {
                 playbackURL: url,
                 segmentCount: store.segmentCount,
                 totalBytes: store.totalBytes,
-                isReadyForPlayback: store.isReadyForPlayback
+                isReadyForPlayback: store.isReadyForPlayback,
+                firstReadyLatencyMilliseconds: latency,
+                totalHTTPRequests: serverStats.totalRequests,
+                playlistRequests: serverStats.playlistRequests,
+                mediaRequests: serverStats.mediaRequests,
+                externalClientRequests: serverStats.externalClientRequests,
+                servedBytes: serverStats.bytesServed,
+                lastClientEndpoint: serverStats.lastClientEndpoint,
+                lastRequestPath: serverStats.lastRequestPath
             )
         )
     }
