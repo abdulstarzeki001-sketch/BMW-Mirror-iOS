@@ -335,6 +335,16 @@ struct LiveCaptureTestView: View {
             )
 
             metricRow(
+                "Playback State",
+                playerManager.playbackStateText
+            )
+
+            metricRow(
+                "Waiting Reason",
+                playerManager.waitingReasonText
+            )
+
+            metricRow(
                 "External Playback",
                 playerManager.isExternalPlaybackActive
                     ? "نشط"
@@ -391,7 +401,7 @@ struct LiveCaptureTestView: View {
                 } label: {
                     Label(
                         validationPassed
-                            ? "إعادة تشغيل Live HLS"
+                            ? "إعادة تشغيل عند الحاجة"
                             : "بانتظار التحقق الذاتي",
                         systemImage:
                             "dot.radiowaves.left.and.right"
@@ -495,6 +505,8 @@ struct LiveCaptureTestView: View {
         ------
         Item: \(playerManager.itemStatusText)
         Playing: \(playerManager.isPlaying)
+        Playback state: \(playerManager.playbackStateText)
+        Waiting reason: \(playerManager.waitingReasonText)
         External: \(playerManager.isExternalPlaybackActive)
         Keep up: \(playerManager.isPlaybackLikelyToKeepUp)
         Stalls: \(playerManager.playbackStallCount)
