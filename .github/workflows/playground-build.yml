@@ -30,7 +30,7 @@ jobs:
           mkdir -p build-artifact
           cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-Final-R3.swiftpm
           ditto -c -k --sequesterRsrc --keepParent \
-            build-artifact/BMWMirrorPad-Final.swiftpm \
+            build-artifact/BMWMirrorPad-Final-R3.swiftpm \
             build-artifact/BMWMirrorPad-Final-R3.swiftpm.zip
 
       - name: Build BMW Mirror Pad for iOS Simulator
@@ -49,6 +49,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: BMWMirrorPad-Final-R3
-          path: build-artifact/BMWMirrorPad-Final.swiftpm.zip
+          path: build-artifact/BMWMirrorPad-Final-R3.swiftpm.zip
           if-no-files-found: error
           retention-days: 7
