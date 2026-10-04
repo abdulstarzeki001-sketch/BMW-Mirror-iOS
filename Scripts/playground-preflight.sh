@@ -20,6 +20,9 @@ required_files=(
   "$ROOT/PlaygroundAirPlayPlayer.swift"
   "$ROOT/PlaygroundAirPlayRoutePicker.swift"
   "$ROOT/PlaygroundDiagnostics.swift"
+  "$ROOT/LiveCaptureTestView.swift"
+  "$ROOT/PlaygroundCaptureManager.swift"
+  "$ROOT/PlaygroundLiveHLSBridge.swift"
   "$ROOT/README.md"
 )
 
@@ -46,6 +49,14 @@ grep -q "prioritizesVideoDevices = true" "$ROOT/PlaygroundAirPlayRoutePicker.swi
 grep -q "AVRouteDetector" "$ROOT/PlaygroundDiagnostics.swift"   || fail "AirPlay route diagnostics are missing"
 
 grep -q "URLSession.shared.data" "$ROOT/PlaygroundDiagnostics.swift"   || fail "HLS reachability probe is missing"
+
+grep -q "RPScreenRecorder.shared" "$ROOT/PlaygroundCaptureManager.swift"   || fail "ReplayKit live capture is missing from the iPad harness"
+
+grep -q "mpeg4AppleHLS" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Live HLS encoding is missing from the iPad harness"
+
+grep -q "NWListener" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Local HLS HTTP server is missing from the iPad harness"
+
+grep -q "Live Capture → AirPlay" "$ROOT/MainView.swift"   || fail "Live capture test entry point is missing"
 
 python3 - <<'PY'
 import plistlib
