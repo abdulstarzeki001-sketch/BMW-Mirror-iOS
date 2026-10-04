@@ -133,6 +133,11 @@ final class LiveHLSSegmenter: NSObject {
             throw BridgeError.invalidVideoDimensions
         }
 
+        store.setVideoDimensions(
+            width: width,
+            height: height
+        )
+
         guard let mp4Type = UTType(AVFileType.mp4.rawValue) else {
             throw BridgeError.missingMP4Type
         }
@@ -140,7 +145,7 @@ final class LiveHLSSegmenter: NSObject {
         let writer = AVAssetWriter(contentType: mp4Type)
         writer.outputFileTypeProfile = .mpeg4AppleHLS
         writer.preferredOutputSegmentInterval = CMTime(
-            seconds: 1.0,
+            seconds: 2.0,
             preferredTimescale: 600
         )
         writer.delegate = self
@@ -152,8 +157,8 @@ final class LiveHLSSegmenter: NSObject {
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 4_000_000,
                 AVVideoExpectedSourceFrameRateKey: 30,
-                AVVideoMaxKeyFrameIntervalKey: 30,
-                AVVideoMaxKeyFrameIntervalDurationKey: 1.0,
+                AVVideoMaxKeyFrameIntervalKey: 60,
+                AVVideoMaxKeyFrameIntervalDurationKey: 2.0,
                 AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel
             ]
         ]
