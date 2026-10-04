@@ -19,7 +19,7 @@ struct LiveCaptureTestView: View {
                         alignment: .leading
                     )
 
-                Text("هذا الاختبار يلتقط محتوى BMW Mirror Pad نفسه عبر ReplayKit، يحوله إلى H.264/HLS محلي، ثم يشغله عبر AVPlayer ويخرجه إلى AirPlay.")
+                Text("هذا الاختبار يلتقط محتوى BMW Mirror Pad نفسه عبر ReplayKit، يحوله إلى H.264/HLS محلي (فيديو فقط حاليًا)، ثم يشغله عبر AVPlayer ويخرجه إلى AirPlay.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(
@@ -186,7 +186,7 @@ struct LiveCaptureTestView: View {
 
             metricRow(
                 "Audio buffers",
-                "\(captureManager.capturedAudioBuffers)"
+                "\(captureManager.capturedAudioBuffers) (غير مستخدمة في HLS)"
             )
 
             Button {
