@@ -22,6 +22,7 @@ required_files=(
   "$ROOT/PlaygroundDiagnostics.swift"
   "$ROOT/LiveCaptureTestView.swift"
   "$ROOT/PlaygroundHLSValidator.swift"
+  "$ROOT/PlaygroundFullDisplayCaptureController.swift"
   "$ROOT/PlaygroundCaptureManager.swift"
   "$ROOT/PlaygroundLiveHLSBridge.swift"
   "$ROOT/README.md"
@@ -84,3 +85,8 @@ grep -q "AVURLAsset" "$ROOT/PlaygroundHLSValidator.swift"   || fail "AVFoundatio
 grep -q "CODECS=" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Master playlist CODECS attribute is missing"
 grep -q "RESOLUTION=" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Master playlist RESOLUTION attribute is missing"
 grep -q "Accept-Ranges: bytes" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "HTTP byte-range support is missing"
+
+
+grep -q "screen-capture" "$ROOT/AdditionalInfo.plist"   || fail "iOS 27 full-display background mode is missing"
+grep -q "SCContentSharingPicker" "$ROOT/PlaygroundFullDisplayCaptureController.swift"   || fail "ScreenCaptureKit system picker is missing"
+grep -q "PlaygroundFullDisplayCaptureController" "$ROOT/PlaygroundCaptureManager.swift"   || fail "Full-display controller is not wired into the iPad harness"
