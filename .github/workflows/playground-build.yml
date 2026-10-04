@@ -34,3 +34,14 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             build
+
+      - name: Package final Swift Playground
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent             Playgrounds/BMWMirrorPad.swiftpm             BMWMirrorPad-Final.swiftpm.zip
+
+      - name: Upload final Swift Playground
+        uses: actions/upload-artifact@v4
+        with:
+          name: BMWMirrorPad-Final
+          path: BMWMirrorPad-Final.swiftpm.zip
+          if-no-files-found: error
