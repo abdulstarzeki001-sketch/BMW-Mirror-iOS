@@ -42,6 +42,9 @@ private final class PlaygroundLiveHLSStore {
     private var initializationSegment: Data?
     private var segments: [PlaygroundLiveHLSSegment] = []
     private var nextSequence = 0
+    private var videoWidth = 0
+    private var videoHeight = 0
+    private var codecString = "avc1.640028"
 
     init(maxSegments: Int = 8) {
         self.maxSegments = max(maxSegments, 3)
@@ -52,12 +55,25 @@ private final class PlaygroundLiveHLSStore {
         initializationSegment = nil
         segments.removeAll(keepingCapacity: true)
         nextSequence = 0
+        videoWidth = 0
+        videoHeight = 0
+        codecString = "avc1.640028"
         lock.unlock()
     }
 
     func setInitializationSegment(_ data: Data) {
         lock.lock()
         initializationSegment = data
+        if let parsed = Self.h264CodecString(from: data) {
+            codecString = parsed
+        }
+        lock.unlock()
+    }
+
+    func setVideoDimensions(width: Int, height: Int) {
+        lock.lock()
+        videoWidth = width
+        videoHeight = height
         lock.unlock()
     }
 
@@ -172,10 +188,14 @@ private final class PlaygroundLiveHLSStore {
     }
 
     private func makeMasterPlaylistLocked() -> String {
-        [
+        let width = max(videoWidth, 2)
+        let height = max(videoHeight, 2)
+
+        return [
             "#EXTM3U",
             "#EXT-X-VERSION:6",
-            "#EXT-X-STREAM-INF:BANDWIDTH=3000000,AVERAGE-BANDWIDTH=2500000",
+            "#EXT-X-INDEPENDENT-SEGMENTS",
+            "#EXT-X-STREAM-INF:BANDWIDTH=3000000,CODECS=\"\(codecString)\",RESOLUTION=\(width)x\(height)",
             "live.m3u8"
         ]
         .joined(separator: "\n") + "\n"
@@ -198,18 +218,6 @@ private final class PlaygroundLiveHLSStore {
             lines.append("#EXT-X-MAP:URI=\"init.mp4\"")
         }
 
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [
-            .withInternetDateTime,
-            .withFractionalSeconds
-        ]
-
-        if let first = segments.first {
-            lines.append(
-                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: first.programDateTime))"
-            )
-        }
-
         for segment in segments {
             lines.append(
                 String(
@@ -221,6 +229,32 @@ private final class PlaygroundLiveHLSStore {
         }
 
         return lines.joined(separator: "\n") + "\n"
+    }
+
+    private static func h264CodecString(from data: Data) -> String? {
+        let bytes = [UInt8](data)
+        guard bytes.count >= 12 else { return nil }
+
+        let marker: [UInt8] = [0x61, 0x76, 0x63, 0x43]
+
+        for index in 0...(bytes.count - 8) {
+            guard Array(bytes[index..<(index + 4)]) == marker else {
+                continue
+            }
+
+            let profile = bytes[index + 5]
+            let compatibility = bytes[index + 6]
+            let level = bytes[index + 7]
+
+            return String(
+                format: "avc1.%02X%02X%02X",
+                profile,
+                compatibility,
+                level
+            )
+        }
+
+        return nil
     }
 }
 
@@ -355,6 +389,11 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             throw BridgeError.invalidVideoDimensions
         }
 
+        store.setVideoDimensions(
+            width: width,
+            height: height
+        )
+
         guard let mp4Type = UTType(AVFileType.mp4.rawValue) else {
             throw BridgeError.missingMP4Type
         }
@@ -362,7 +401,7 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
         let writer = AVAssetWriter(contentType: mp4Type)
         writer.outputFileTypeProfile = .mpeg4AppleHLS
         writer.preferredOutputSegmentInterval = CMTime(
-            seconds: 1.0,
+            seconds: 2.0,
             preferredTimescale: 600
         )
         writer.delegate = self
@@ -374,8 +413,8 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 2_500_000,
                 AVVideoExpectedSourceFrameRateKey: 30,
-                AVVideoMaxKeyFrameIntervalKey: 30,
-                AVVideoMaxKeyFrameIntervalDurationKey: 1.0,
+                AVVideoMaxKeyFrameIntervalKey: 60,
+                AVVideoMaxKeyFrameIntervalDurationKey: 2.0,
                 AVVideoProfileLevelKey:
                     AVVideoProfileLevelH264HighAutoLevel
             ]
