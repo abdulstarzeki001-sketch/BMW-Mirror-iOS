@@ -4,17 +4,17 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "BMW Mirror Pad",
+    name: "BMW Mirror Pad Final R3",
     platforms: [
         .iOS("17.0")
     ],
     products: [
         .iOSApplication(
-            name: "BMW Mirror Pad",
+            name: "BMW Mirror Pad Final R3",
             targets: ["AppModule"],
-            bundleIdentifier: "com.abdulstar.bmwmirror.padtest",
-            displayVersion: "1.0",
-            bundleVersion: "1",
+            bundleIdentifier: "com.abdulstar.bmwmirror.padfinalr3",
+            displayVersion: "3.0",
+            bundleVersion: "300",
             appIcon: .placeholder(icon: .star),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
