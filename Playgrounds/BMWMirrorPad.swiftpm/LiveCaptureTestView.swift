@@ -8,6 +8,9 @@ struct LiveCaptureTestView: View {
         PlaygroundAirPlayPlayer()
 
     @State private var didLoadLiveURL = false
+    @State private var validationStatus = "بانتظار HLS"
+    @State private var validationDetails = "—"
+    @State private var validationPassed = false
 
     var body: some View {
         ScrollView {
@@ -75,9 +78,12 @@ struct LiveCaptureTestView: View {
             _, ready in
 
             if ready {
-                loadLiveStreamIfNeeded()
+                validateAndAutoplay()
             } else {
                 didLoadLiveURL = false
+                validationPassed = false
+                validationStatus = "بانتظار HLS"
+                validationDetails = "—"
             }
         }
         .onDisappear {
@@ -234,6 +240,16 @@ struct LiveCaptureTestView: View {
             )
 
             metricRow(
+                "Self Validation",
+                validationStatus
+            )
+
+            metricRow(
+                "Validation Details",
+                validationDetails
+            )
+
+            metricRow(
                 "First Ready",
                 captureManager.firstReadyLatencyText
             )
@@ -374,7 +390,9 @@ struct LiveCaptureTestView: View {
                     }
                 } label: {
                     Label(
-                        "تشغيل Live HLS",
+                        validationPassed
+                            ? "إعادة تشغيل Live HLS"
+                            : "بانتظار التحقق الذاتي",
                         systemImage:
                             "dot.radiowaves.left.and.right"
                     )
@@ -382,7 +400,7 @@ struct LiveCaptureTestView: View {
                     .padding(.vertical, 10)
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(!captureManager.hlsReady)
+                .disabled(!validationPassed)
             }
         }
         .padding()
@@ -390,6 +408,42 @@ struct LiveCaptureTestView: View {
         .clipShape(
             RoundedRectangle(cornerRadius: 18)
         )
+    }
+
+    private func validateAndAutoplay() {
+        guard
+            !didLoadLiveURL,
+            let url = captureManager.playbackURL
+        else {
+            return
+        }
+
+        validationStatus = "جارٍ التحقق الذاتي…"
+        validationDetails = "master/media/init/segment/AVFoundation"
+
+        Task {
+            let result =
+                await PlaygroundHLSValidator.validate(
+                    masterURL: url
+                )
+
+            await MainActor.run {
+                validationPassed = result.passed
+                validationStatus = result.message
+                validationDetails = result.details
+
+                guard result.passed else {
+                    return
+                }
+
+                playerManager.load(
+                    url: url,
+                    label: "iPad Live Capture HLS"
+                )
+                playerManager.play()
+                didLoadLiveURL = true
+            }
+        }
     }
 
     private func loadLiveStreamIfNeeded() {
@@ -423,6 +477,8 @@ struct LiveCaptureTestView: View {
         HLS
         ---
         Ready: \(captureManager.hlsReady)
+        Validation status: \(validationStatus)
+        Validation details: \(validationDetails)
         First ready: \(captureManager.firstReadyLatencyText)
         Segments: \(captureManager.segmentCount)
         Buffer bytes: \(captureManager.bufferBytes)
