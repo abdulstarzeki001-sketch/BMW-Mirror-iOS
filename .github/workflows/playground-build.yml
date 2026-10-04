@@ -28,17 +28,17 @@ jobs:
         run: |
           rm -rf build-artifact
           mkdir -p build-artifact
-          cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-Final-R3.swiftpm
+          cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-FullScreen-R4.swiftpm
           ditto -c -k --sequesterRsrc --keepParent \
-            build-artifact/BMWMirrorPad-Final-R3.swiftpm \
-            build-artifact/BMWMirrorPad-Final-R3.swiftpm.zip
+            build-artifact/BMWMirrorPad-FullScreen-R4.swiftpm \
+            build-artifact/BMWMirrorPad-FullScreen-R4.swiftpm.zip
 
       - name: Build BMW Mirror Pad for iOS Simulator
         working-directory: Playgrounds/BMWMirrorPad.swiftpm
         run: |
           set -o pipefail
           xcodebuild \
-            -scheme "BMW Mirror Pad Final R3" \
+            -scheme "BMW Mirror Pad Full Screen R4" \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
@@ -48,7 +48,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: BMWMirrorPad-Final-R3
-          path: build-artifact/BMWMirrorPad-Final-R3.swiftpm.zip
+          name: BMWMirrorPad-FullScreen-R4
+          path: build-artifact/BMWMirrorPad-FullScreen-R4.swiftpm.zip
           if-no-files-found: error
           retention-days: 7
