@@ -18,6 +18,9 @@ final class LiveHLSStore {
     private var initializationSegment: Data?
     private var segments: [LiveHLSSegment] = []
     private var nextSequence = 0
+    private var videoWidth = 0
+    private var videoHeight = 0
+    private var codecString = "avc1.640028"
 
     init(maxSegments: Int = 8) {
         self.maxSegments = max(maxSegments, 3)
@@ -30,11 +33,26 @@ final class LiveHLSStore {
         initializationSegment = nil
         segments.removeAll(keepingCapacity: true)
         nextSequence = 0
+        videoWidth = 0
+        videoHeight = 0
+        codecString = "avc1.640028"
     }
 
     func setInitializationSegment(_ data: Data) {
         lock.lock()
         initializationSegment = data
+
+        if let parsed = Self.h264CodecString(from: data) {
+            codecString = parsed
+        }
+
+        lock.unlock()
+    }
+
+    func setVideoDimensions(width: Int, height: Int) {
+        lock.lock()
+        videoWidth = width
+        videoHeight = height
         lock.unlock()
     }
 
@@ -102,7 +120,13 @@ final class LiveHLSStore {
             .map(String.init) ?? path
 
         switch normalized {
-        case "/", "/live.m3u8":
+        case "/", "/master.m3u8":
+            return (
+                Data(makeMasterPlaylistLocked().utf8),
+                "application/vnd.apple.mpegurl"
+            )
+
+        case "/live.m3u8":
             return (
                 Data(makePlaylistLocked().utf8),
                 "application/vnd.apple.mpegurl"
@@ -125,6 +149,20 @@ final class LiveHLSStore {
         }
     }
 
+    private func makeMasterPlaylistLocked() -> String {
+        let width = max(videoWidth, 2)
+        let height = max(videoHeight, 2)
+
+        return [
+            "#EXTM3U",
+            "#EXT-X-VERSION:6",
+            "#EXT-X-INDEPENDENT-SEGMENTS",
+            "#EXT-X-STREAM-INF:BANDWIDTH=5000000,CODECS=\"\(codecString)\",RESOLUTION=\(width)x\(height)",
+            "live.m3u8"
+        ]
+        .joined(separator: "\n") + "\n"
+    }
+
     private func makePlaylistLocked() -> String {
         let maxDuration = segments.map(\.duration).max() ?? 1
         let targetDuration = max(2, Int(ceil(maxDuration)))
@@ -142,23 +180,37 @@ final class LiveHLSStore {
             lines.append("#EXT-X-MAP:URI=\"init.mp4\"")
         }
 
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [
-            .withInternetDateTime,
-            .withFractionalSeconds
-        ]
-
-        if let first = segments.first {
-            lines.append(
-                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: first.programDateTime))"
-            )
-        }
-
         for segment in segments {
             lines.append(String(format: "#EXTINF:%.3f,", segment.duration))
             lines.append(segment.filename)
         }
 
         return lines.joined(separator: "\n") + "\n"
+    }
+
+    private static func h264CodecString(from data: Data) -> String? {
+        let bytes = [UInt8](data)
+        guard bytes.count >= 12 else { return nil }
+
+        let marker: [UInt8] = [0x61, 0x76, 0x63, 0x43]
+
+        for index in 0...(bytes.count - 8) {
+            guard Array(bytes[index..<(index + 4)]) == marker else {
+                continue
+            }
+
+            let profile = bytes[index + 5]
+            let compatibility = bytes[index + 6]
+            let level = bytes[index + 7]
+
+            return String(
+                format: "avc1.%02X%02X%02X",
+                profile,
+                compatibility,
+                level
+            )
+        }
+
+        return nil
     }
 }
