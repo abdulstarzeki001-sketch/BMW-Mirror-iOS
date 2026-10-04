@@ -168,3 +168,14 @@
 - Confirm `External Playback = active`
 - Confirm `External HLS Requests > 0`
 - Record stalls and first-ready latency
+
+
+## 🟡 Stage 13E — Live HLS Segment Reliability
+- Physical iPad test confirmed ReplayKit delivers thousands of video frames
+- Initial live bridge stayed at 0 segments / 0 KB
+- Manual one-second `flushSegment()` was added
+- Physical follow-up still showed no segments while the app audio track remained silent
+- Live transport is now intentionally video-only so an empty AAC input cannot block CMAF/HLS finalization
+- `initialSegmentStartTime` is no longer set for manual `.indefinite` segmentation
+- One-second keyframe duration is requested for cleaner segment boundaries
+- Physical re-test pending
