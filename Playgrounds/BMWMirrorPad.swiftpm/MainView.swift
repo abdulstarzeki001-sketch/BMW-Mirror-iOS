@@ -15,6 +15,19 @@ struct MainView: View {
             ScrollView {
                 VStack(spacing: 18) {
                     headerCard
+
+                    NavigationLink {
+                        LiveCaptureTestView()
+                    } label: {
+                        Label(
+                            "Live Capture → AirPlay",
+                            systemImage: "record.circle"
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.borderedProminent)
+
                     sourceCard
 
                     VideoPlayer(player: playerManager.player)
