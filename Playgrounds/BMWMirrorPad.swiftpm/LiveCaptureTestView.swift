@@ -317,6 +317,11 @@ struct LiveCaptureTestView: View {
                 "\(playerManager.playbackStallCount)"
             )
 
+            metricRow(
+                "Player Error Details",
+                playerManager.errorDetailsText
+            )
+
             if let playerError = playerManager.errorText {
                 Text("AVPlayer: \(playerError)")
                     .font(.caption)
