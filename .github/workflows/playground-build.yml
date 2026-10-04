@@ -24,6 +24,15 @@ jobs:
         working-directory: Playgrounds/BMWMirrorPad.swiftpm
         run: xcodebuild -list
 
+      - name: Package verified iPad playground
+        run: |
+          rm -rf build-artifact
+          mkdir -p build-artifact
+          cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-Final.swiftpm
+          ditto -c -k --sequesterRsrc --keepParent \
+            build-artifact/BMWMirrorPad-Final.swiftpm \
+            build-artifact/BMWMirrorPad-Final.swiftpm.zip
+
       - name: Build BMW Mirror Pad for iOS Simulator
         working-directory: Playgrounds/BMWMirrorPad.swiftpm
         run: |
@@ -34,3 +43,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             build
+
+      - name: Upload verified iPad package
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BMWMirrorPad-Final
+          path: build-artifact/BMWMirrorPad-Final.swiftpm.zip
+          if-no-files-found: error
+          retention-days: 7
