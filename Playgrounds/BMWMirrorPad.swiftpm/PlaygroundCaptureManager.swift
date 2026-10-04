@@ -2,8 +2,25 @@ import Foundation
 import ReplayKit
 import CoreMedia
 
+enum PlaygroundCaptureMode: String, CaseIterable, Identifiable {
+    case fullDisplay
+    case inApp
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .fullDisplay:
+            return "الشاشة كاملة"
+        case .inApp:
+            return "داخل التطبيق"
+        }
+    }
+}
+
 @MainActor
 final class PlaygroundCaptureManager: ObservableObject {
+    @Published var captureMode: PlaygroundCaptureMode = .inApp
     @Published private(set) var isCapturing = false
     @Published private(set) var isBusy = false
     @Published private(set) var statusText = "جاهز"
@@ -29,6 +46,10 @@ final class PlaygroundCaptureManager: ObservableObject {
 
     private let recorder = RPScreenRecorder.shared()
     private let bridge = PlaygroundLiveBridge()
+
+    #if canImport(ScreenCaptureKit)
+    private var fullDisplayController: AnyObject?
+    #endif
 
     init() {
         recorder.isMicrophoneEnabled = false
@@ -75,10 +96,37 @@ final class PlaygroundCaptureManager: ObservableObject {
                 self?.handle(error)
             }
         }
+
+        if supportsFullDisplayCapture {
+            captureMode = .fullDisplay
+            statusText = "جاهز لالتقاط الشاشة الكاملة"
+        }
     }
 
     var isReplayKitAvailable: Bool {
         recorder.isAvailable
+    }
+
+    var supportsFullDisplayCapture: Bool {
+        #if canImport(ScreenCaptureKit)
+        if #available(iOS 27.0, *) {
+            return true
+        }
+        #endif
+
+        return false
+    }
+
+    var captureModeDetail: String {
+        switch captureMode {
+        case .fullDisplay:
+            return supportsFullDisplayCapture
+                ? "ScreenCaptureKit — يلتقط الشاشة كاملة بعد اختيارك من نافذة النظام."
+                : "الشاشة الكاملة تحتاج iOS/iPadOS 27 أو أحدث."
+
+        case .inApp:
+            return "ReplayKit — يلتقط محتوى BMW Mirror Pad فقط."
+        }
     }
 
     func toggleCapture() {
@@ -92,19 +140,32 @@ final class PlaygroundCaptureManager: ObservableObject {
     func startCapture() {
         guard !isBusy, !isCapturing else { return }
 
+        resetMetrics()
+        errorText = nil
+        isBusy = true
+
+        statusText = captureMode == .fullDisplay
+            ? "بانتظار اختيار الشاشة…"
+            : "جارٍ بدء ReplayKit…"
+
+        bridge.start()
+
+        if captureMode == .fullDisplay {
+            startFullDisplayCapture()
+            return
+        }
+
+        startInAppReplayKitCapture()
+    }
+
+    private func startInAppReplayKitCapture() {
         guard recorder.isAvailable else {
             errorText =
                 "ReplayKit غير متاح على هذا الجهاز."
             statusText = "غير متاح"
+            bridge.shutdown()
             return
         }
-
-        resetMetrics()
-        errorText = nil
-        isBusy = true
-        statusText = "جارٍ بدء ReplayKit…"
-
-        bridge.start()
 
         let bridge = self.bridge
 
@@ -166,6 +227,15 @@ final class PlaygroundCaptureManager: ObservableObject {
     func stopCapture() {
         guard !isBusy else { return }
 
+        if captureMode == .fullDisplay {
+            stopFullDisplayCapture()
+            return
+        }
+
+        stopInAppReplayKitCapture()
+    }
+
+    private func stopInAppReplayKitCapture() {
         guard recorder.isRecording || isCapturing else {
             bridge.finishCapture()
             isCapturing = false
@@ -173,7 +243,7 @@ final class PlaygroundCaptureManager: ObservableObject {
         }
 
         isBusy = true
-        statusText = "جارٍ إيقاف الالتقاط…"
+        statusText = "جارٍ إيقاف ReplayKit…"
 
         recorder.stopCapture {
             [weak self] error in
@@ -194,10 +264,137 @@ final class PlaygroundCaptureManager: ObservableObject {
         }
     }
 
+    private func startFullDisplayCapture() {
+        guard supportsFullDisplayCapture else {
+            statusText = "الشاشة الكاملة غير متاحة"
+            errorText =
+                "ScreenCaptureKit يحتاج iOS/iPadOS 27 أو أحدث."
+            isBusy = false
+            bridge.shutdown()
+            return
+        }
+
+        #if canImport(ScreenCaptureKit)
+        if #available(iOS 27.0, *) {
+            let controller =
+                PlaygroundFullDisplayCaptureController()
+
+            let bridge = self.bridge
+
+            controller.onVideoSampleBuffer = {
+                [weak self] sampleBuffer in
+
+                bridge.appendVideo(sampleBuffer)
+
+                Task { @MainActor [weak self] in
+                    self?.capturedVideoFrames += 1
+                }
+            }
+
+            controller.onAudioSampleBuffer = {
+                [weak self] sampleBuffer in
+
+                bridge.appendAudio(sampleBuffer)
+
+                Task { @MainActor [weak self] in
+                    self?.capturedAudioBuffers += 1
+                }
+            }
+
+            controller.onStateChange = {
+                [weak self] state in
+
+                Task { @MainActor [weak self] in
+                    self?.statusText = state
+                }
+            }
+
+            controller.onStarted = { [weak self] in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+
+                    isBusy = false
+                    isCapturing = true
+                    statusText =
+                        "ScreenCaptureKit يلتقط الشاشة الكاملة"
+                }
+            }
+
+            controller.onStopped = { [weak self] in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+
+                    isBusy = false
+                    isCapturing = false
+                    statusText = "تم إيقاف الشاشة الكاملة"
+                    bridge.finishCapture()
+                    fullDisplayController = nil
+                }
+            }
+
+            controller.onError = { [weak self] error in
+                Task { @MainActor [weak self] in
+                    self?.handle(error)
+                }
+            }
+
+            fullDisplayController = controller
+            controller.presentFullDisplayPicker()
+            return
+        }
+        #endif
+
+        statusText = "ScreenCaptureKit غير متاح"
+        errorText =
+            "نسخة النظام أو SDK لا توفر ScreenCaptureKit على iOS."
+        isBusy = false
+        bridge.shutdown()
+    }
+
+    private func stopFullDisplayCapture() {
+        #if canImport(ScreenCaptureKit)
+        if #available(iOS 27.0, *),
+           let controller =
+            fullDisplayController
+                as? PlaygroundFullDisplayCaptureController {
+
+            isBusy = true
+            statusText =
+                "جارٍ إيقاف التقاط الشاشة الكاملة…"
+
+            Task {
+                await controller.stop()
+            }
+
+            return
+        }
+        #endif
+
+        isCapturing = false
+        isBusy = false
+        statusText = "متوقف"
+        bridge.finishCapture()
+        fullDisplayController = nil
+    }
+
     func shutdown() {
         if recorder.isRecording {
             recorder.stopCapture { _ in }
         }
+
+        #if canImport(ScreenCaptureKit)
+        if #available(iOS 27.0, *),
+           let controller =
+            fullDisplayController
+                as? PlaygroundFullDisplayCaptureController {
+
+            Task {
+                await controller.stop()
+            }
+        }
+
+        fullDisplayController = nil
+        #endif
 
         isCapturing = false
         isBusy = false
@@ -229,5 +426,10 @@ final class PlaygroundCaptureManager: ObservableObject {
         statusText = "خطأ"
         isCapturing = false
         isBusy = false
+        bridge.shutdown()
+
+        #if canImport(ScreenCaptureKit)
+        fullDisplayController = nil
+        #endif
     }
 }
