@@ -49,6 +49,16 @@ struct LiveCaptureTestView: View {
                         )
                 }
 
+                ShareLink(item: liveDiagnosticReport) {
+                    Label(
+                        "مشاركة تقرير Live HLS",
+                        systemImage: "square.and.arrow.up"
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                }
+                .buttonStyle(.bordered)
+
                 Text("النجاح الكامل هنا يعني أن شاشة الاختبار المتحركة تظهر على مستقبل AirPlay، مع External Playback = نشط وExternal HLS Requests > 0.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -267,6 +277,16 @@ struct LiveCaptureTestView: View {
                 captureManager.lastRequestPath
             )
 
+            metricRow(
+                "Init Bytes",
+                "\(captureManager.initializationBytes)"
+            )
+
+            metricRow(
+                "Latest Segment Bytes",
+                "\(captureManager.latestSegmentBytes)"
+            )
+
             if let url = captureManager.playbackURL {
                 Text(url.absoluteString)
                     .font(.caption2.monospaced())
@@ -386,6 +406,49 @@ struct LiveCaptureTestView: View {
         )
 
         didLoadLiveURL = true
+    }
+
+    private var liveDiagnosticReport: String {
+        """
+        BMW Mirror Pad — Live HLS Diagnostic
+        ====================================
+        Time: \(ISO8601DateFormatter().string(from: Date()))
+
+        Capture
+        -------
+        Capturing: \(captureManager.isCapturing)
+        Video frames: \(captureManager.capturedVideoFrames)
+        Audio buffers: \(captureManager.capturedAudioBuffers)
+
+        HLS
+        ---
+        Ready: \(captureManager.hlsReady)
+        First ready: \(captureManager.firstReadyLatencyText)
+        Segments: \(captureManager.segmentCount)
+        Buffer bytes: \(captureManager.bufferBytes)
+        Init bytes: \(captureManager.initializationBytes)
+        Latest segment bytes: \(captureManager.latestSegmentBytes)
+        HTTP requests: \(captureManager.httpRequests)
+        Media requests: \(captureManager.mediaRequests)
+        External HLS requests: \(captureManager.externalClientRequests)
+        Last client: \(captureManager.lastClientEndpoint)
+        Last path: \(captureManager.lastRequestPath)
+        URL: \(captureManager.playbackURL?.absoluteString ?? "—")
+
+        Player
+        ------
+        Item: \(playerManager.itemStatusText)
+        Playing: \(playerManager.isPlaying)
+        External: \(playerManager.isExternalPlaybackActive)
+        Keep up: \(playerManager.isPlaybackLikelyToKeepUp)
+        Stalls: \(playerManager.playbackStallCount)
+        Error: \(playerManager.errorText ?? "—")
+        Error details: \(playerManager.errorDetailsText)
+
+        Media playlist
+        --------------
+        \(captureManager.playlistText)
+        """
     }
 
     private func metricRow(
