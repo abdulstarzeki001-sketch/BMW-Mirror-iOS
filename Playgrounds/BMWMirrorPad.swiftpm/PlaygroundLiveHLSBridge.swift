@@ -24,6 +24,7 @@ struct PlaygroundLiveBridgeSnapshot {
 private struct PlaygroundLiveHLSSegment {
     let sequence: Int
     let duration: Double
+    let programDateTime: Date
     let data: Data
 
     var filename: String {
@@ -63,6 +64,7 @@ private final class PlaygroundLiveHLSStore {
         let segment = PlaygroundLiveHLSSegment(
             sequence: nextSequence,
             duration: max(duration, 0.1),
+            programDateTime: Date(),
             data: data
         )
 
@@ -93,7 +95,7 @@ private final class PlaygroundLiveHLSStore {
     var isReadyForPlayback: Bool {
         lock.lock()
         defer { lock.unlock() }
-        return initializationSegment != nil && !segments.isEmpty
+        return initializationSegment != nil && segments.count >= 3
     }
 
     func response(for path: String) -> (data: Data, contentType: String)? {
@@ -138,7 +140,7 @@ private final class PlaygroundLiveHLSStore {
 
         var lines = [
             "#EXTM3U",
-            "#EXT-X-VERSION:7",
+            "#EXT-X-VERSION:6",
             "#EXT-X-TARGETDURATION:\(targetDuration)",
             "#EXT-X-MEDIA-SEQUENCE:\(firstSequence)",
             "#EXT-X-INDEPENDENT-SEGMENTS"
@@ -148,7 +150,16 @@ private final class PlaygroundLiveHLSStore {
             lines.append("#EXT-X-MAP:URI=\"init.mp4\"")
         }
 
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
+
         for segment in segments {
+            lines.append(
+                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: segment.programDateTime))"
+            )
             lines.append(
                 String(
                     format: "#EXTINF:%.3f,",
@@ -562,7 +573,22 @@ private final class PlaygroundLiveHTTPServer {
                 return
             }
 
-            let path = String(parts[1])
+            let rawTarget = String(parts[1])
+            let path: String
+
+            if let absoluteURL = URL(string: rawTarget),
+               absoluteURL.scheme != nil {
+                var components = URLComponents(
+                    url: absoluteURL,
+                    resolvingAgainstBaseURL: false
+                )
+                path = components?.percentEncodedPath.isEmpty == false
+                    ? components!.percentEncodedPath
+                    : "/"
+            } else {
+                path = rawTarget
+            }
+
             let endpoint =
                 String(describing: connection.endpoint)
 
