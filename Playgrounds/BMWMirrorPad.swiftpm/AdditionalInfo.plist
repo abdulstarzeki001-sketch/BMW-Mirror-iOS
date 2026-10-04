@@ -4,6 +4,10 @@
 <dict>
     <key>NSLocalNetworkUsageDescription</key>
     <string>BMW Mirror Pad uses the local network to test HLS streams from your iPhone and AirPlay-capable devices.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>screen-capture</string>
+    </array>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsLocalNetworking</key>
