@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 struct LiveCaptureTestView: View {
     @StateObject private var captureManager =
@@ -322,6 +323,24 @@ struct LiveCaptureTestView: View {
 
     private var airPlayCard: some View {
         VStack(spacing: 12) {
+            if validationPassed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Live Local Preview")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+
+                    VideoPlayer(player: playerManager.player)
+                        .frame(minHeight: 220)
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: 14
+                            )
+                        )
+                        .onAppear {
+                            playerManager.ensurePlayback()
+                        }
+                }
+            }
             metricRow(
                 "Player",
                 playerManager.itemStatusText
