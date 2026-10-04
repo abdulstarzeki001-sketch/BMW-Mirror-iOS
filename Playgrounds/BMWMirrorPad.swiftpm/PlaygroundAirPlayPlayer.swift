@@ -84,6 +84,11 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
         load(url: url, label: "Apple HLS Probe")
     }
 
+    func play() {
+        player.play()
+        refresh()
+    }
+
     func togglePlayback() {
         if player.timeControlStatus == .playing {
             player.pause()
