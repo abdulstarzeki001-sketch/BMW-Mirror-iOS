@@ -66,6 +66,8 @@ struct LiveCaptureTestView: View {
 
             if ready {
                 loadLiveStreamIfNeeded()
+            } else {
+                didLoadLiveURL = false
             }
         }
         .onDisappear {
