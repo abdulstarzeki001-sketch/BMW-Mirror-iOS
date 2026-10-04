@@ -359,6 +359,16 @@ struct LiveCaptureTestView: View {
             )
 
             metricRow(
+                "Player Rate",
+                playerManager.playerRateText
+            )
+
+            metricRow(
+                "Current Time",
+                playerManager.currentTimeText
+            )
+
+            metricRow(
                 "Waiting Reason",
                 playerManager.waitingReasonText
             )
@@ -525,6 +535,8 @@ struct LiveCaptureTestView: View {
         Item: \(playerManager.itemStatusText)
         Playing: \(playerManager.isPlaying)
         Playback state: \(playerManager.playbackStateText)
+        Player rate: \(playerManager.playerRateText)
+        Current time: \(playerManager.currentTimeText)
         Waiting reason: \(playerManager.waitingReasonText)
         External: \(playerManager.isExternalPlaybackActive)
         Keep up: \(playerManager.isPlaybackLikelyToKeepUp)
