@@ -163,6 +163,7 @@ final class PlaygroundCaptureManager: ObservableObject {
             errorText =
                 "ReplayKit غير متاح على هذا الجهاز."
             statusText = "غير متاح"
+            isBusy = false
             bridge.shutdown()
             return
         }
@@ -374,7 +375,10 @@ final class PlaygroundCaptureManager: ObservableObject {
         isBusy = false
         statusText = "متوقف"
         bridge.finishCapture()
+
+        #if canImport(ScreenCaptureKit)
         fullDisplayController = nil
+        #endif
     }
 
     func shutdown() {
