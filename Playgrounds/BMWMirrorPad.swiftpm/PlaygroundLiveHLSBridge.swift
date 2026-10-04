@@ -19,6 +19,9 @@ struct PlaygroundLiveBridgeSnapshot {
     let servedBytes: Int
     let lastClientEndpoint: String
     let lastRequestPath: String
+    let playlistText: String
+    let initializationBytes: Int
+    let latestSegmentBytes: Int
 }
 
 private struct PlaygroundLiveHLSSegment {
@@ -109,6 +112,24 @@ private final class PlaygroundLiveHLSStore {
         return initializationSegment != nil && segments.count >= 3
     }
 
+    var playlistText: String {
+        lock.lock()
+        defer { lock.unlock() }
+        return makePlaylistLocked()
+    }
+
+    var initializationBytes: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return initializationSegment?.count ?? 0
+    }
+
+    var latestSegmentBytes: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return segments.last?.data.count ?? 0
+    }
+
     func response(for path: String) -> (data: Data, contentType: String)? {
         lock.lock()
         defer { lock.unlock() }
@@ -119,7 +140,13 @@ private final class PlaygroundLiveHLSStore {
             .map(String.init) ?? path
 
         switch normalized {
-        case "/", "/live.m3u8":
+        case "/", "/master.m3u8":
+            return (
+                Data(makeMasterPlaylistLocked().utf8),
+                "application/vnd.apple.mpegurl"
+            )
+
+        case "/live.m3u8":
             return (
                 Data(makePlaylistLocked().utf8),
                 "application/vnd.apple.mpegurl"
@@ -142,6 +169,16 @@ private final class PlaygroundLiveHLSStore {
 
             return (segment.data, "video/iso.segment")
         }
+    }
+
+    private func makeMasterPlaylistLocked() -> String {
+        [
+            "#EXTM3U",
+            "#EXT-X-VERSION:6",
+            "#EXT-X-STREAM-INF:BANDWIDTH=3000000,AVERAGE-BANDWIDTH=2500000",
+            "live.m3u8"
+        ]
+        .joined(separator: "\n") + "\n"
     }
 
     private func makePlaylistLocked() -> String {
@@ -513,7 +550,7 @@ private final class PlaygroundLiveHTTPServer {
 
                     if let url = URL(
                         string:
-                            "http://\(host):\(port.rawValue)/live.m3u8"
+                            "http://\(host):\(port.rawValue)/master.m3u8"
                     ) {
                         onReady?(url)
                     }
@@ -1037,7 +1074,10 @@ final class PlaygroundLiveBridge {
                 lastClientEndpoint:
                     stats.lastClientEndpoint,
                 lastRequestPath:
-                    stats.lastRequestPath
+                    stats.lastRequestPath,
+                playlistText: store.playlistText,
+                initializationBytes: store.initializationBytes,
+                latestSegmentBytes: store.latestSegmentBytes
             )
         )
     }
