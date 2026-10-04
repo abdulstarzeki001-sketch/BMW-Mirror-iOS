@@ -143,10 +143,28 @@
 - Route/network diagnostics
 - Shareable validation report
 
-## 🟡 Stage 13B — iPad Physical AirPlay Validation
-- Open the playground on the user's iPad
-- Run Apple HLS probe
-- Select a real AirPlay video receiver
+## ✅ Stage 13B — iPad Physical AirPlay Validation
+- BMWMirrorPad opened successfully in Swift Playgrounds on physical iPad
+- Apple HLS probe played locally
+- AirPlay receiver `EShare-7866` was selected
+- `External Playback = active`
+- The Apple HLS video appeared on the external TV
+- Network path remained satisfied
+
+## ✅ Stage 13C — iPad Live Capture Test Harness
+- Added ReplayKit in-app capture
+- Added real-time H.264 / Apple HLS encoding
+- Added rolling in-memory live playlist
+- Added local Network.framework HTTP server
+- Added automatic AVPlayer loading when HLS becomes ready
+- Added external HLS request metrics
+- Added animated on-screen capture target
+
+## 🟡 Stage 13D — Physical Live Capture → AirPlay Validation
+- Start Live Capture on the iPad
+- Wait for HLS Ready
+- Select `EShare-7866`
+- Confirm the animated capture target appears on the TV
 - Confirm `External Playback = active`
-- Export the validation report
-- Optionally test the iPhone Broadcast HLS URL from the iPad on the same network
+- Confirm `External HLS Requests > 0`
+- Record stalls and first-ready latency
