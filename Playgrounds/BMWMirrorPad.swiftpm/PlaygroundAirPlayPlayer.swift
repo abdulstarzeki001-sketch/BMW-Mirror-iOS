@@ -12,6 +12,7 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
     @Published private(set) var playbackStallCount = 0
     @Published private(set) var externalTransitionText = "لم يبدأ"
     @Published private(set) var errorText: String?
+    @Published private(set) var errorDetailsText = "—"
 
     let player = AVPlayer()
 
@@ -56,6 +57,7 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
 
     func load(url: URL, label: String) {
         errorText = nil
+        errorDetailsText = "—"
         sourceLabel = label
         playbackStallCount = 0
         previousExternalState = false
@@ -156,7 +158,21 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
                 case .failed:
                     self.itemStatusText = "فشل"
                     self.statusText = "فشل تشغيل \(self.sourceLabel)"
-                    self.errorText = item.error?.localizedDescription ?? "خطأ غير معروف"
+
+                    if let nsError = item.error as NSError? {
+                        self.errorText = nsError.localizedDescription
+                        self.errorDetailsText =
+                            "\(nsError.domain) (\(nsError.code)): \(nsError.localizedDescription)"
+                    } else {
+                        self.errorText = "خطأ غير معروف"
+                        self.errorDetailsText = "AVPlayerItem failed without NSError"
+                    }
+
+                    if let event = item.errorLog()?.events.last {
+                        let comment = event.errorComment ?? "—"
+                        self.errorDetailsText +=
+                            "\nLog domain=\(event.errorDomain) code=\(event.errorStatusCode) comment=\(comment)"
+                    }
 
                 @unknown default:
                     self.itemStatusText = "غير معروف"
