@@ -16,8 +16,16 @@ struct LiveCaptureTestView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 18) {
-                Text("Live Capture → AirPlay")
-                    .font(.title2.bold())
+                HStack {
+                    Text("Live Capture → AirPlay")
+                        .font(.title2.bold())
+
+                    Spacer()
+
+                    Text("FINAL-R3-20261004-0245")
+                        .font(.caption2.monospaced().bold())
+                        .foregroundStyle(.green)
+                }
                     .frame(
                         maxWidth: .infinity,
                         alignment: .leading
@@ -505,6 +513,7 @@ struct LiveCaptureTestView: View {
         """
         BMW Mirror Pad — Live HLS Diagnostic
         ====================================
+        Build: FINAL-R3-20261004-0245
         Time: \(ISO8601DateFormatter().string(from: Date()))
 
         Capture
