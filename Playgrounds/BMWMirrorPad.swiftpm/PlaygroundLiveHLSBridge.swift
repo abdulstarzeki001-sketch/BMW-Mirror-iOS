@@ -663,6 +663,7 @@ private final class PlaygroundLiveHTTPServer {
                 return
             }
 
+            let method = String(parts[0]).uppercased()
             let rawTarget = String(parts[1])
             let path: String
 
@@ -696,17 +697,50 @@ private final class PlaygroundLiveHTTPServer {
                 return
             }
 
+            let rangeHeader = request
+                .components(separatedBy: "\r\n")
+                .first {
+                    $0.lowercased().hasPrefix("range:")
+                }
+
+            let fullData = response.data
+            let range = rangeHeader.flatMap {
+                parseByteRange(
+                    from: $0,
+                    dataCount: fullData.count
+                )
+            }
+
+            let body: Data
+            let status: String
+            var extraHeaders: [String] = [
+                "Accept-Ranges: bytes"
+            ]
+
+            if let range {
+                body = Data(fullData[range])
+                status = "206 Partial Content"
+                extraHeaders.append(
+                    "Content-Range: bytes \(range.lowerBound)-\(range.upperBound)/\(fullData.count)"
+                )
+            } else {
+                body = fullData
+                status = "200 OK"
+            }
+
             recordRequest(
                 path: path,
                 clientEndpoint: endpoint,
                 remoteHost: remoteHost,
-                bytes: response.data.count
+                bytes: body.count
             )
 
             send(
-                status: "200 OK",
+                status: status,
                 contentType: response.contentType,
-                body: response.data,
+                body: body,
+                extraHeaders: extraHeaders,
+                includeBody: method != "HEAD",
                 on: connection
             )
         }
@@ -790,6 +824,8 @@ private final class PlaygroundLiveHTTPServer {
             status: "404 Not Found",
             contentType: "text/plain; charset=utf-8",
             body: Data("Not Found".utf8),
+            extraHeaders: [],
+            includeBody: true,
             on: connection
         )
     }
@@ -798,20 +834,30 @@ private final class PlaygroundLiveHTTPServer {
         status: String,
         contentType: String,
         body: Data,
+        extraHeaders: [String],
+        includeBody: Bool,
         on connection: NWConnection
     ) {
-        let header = """
-        HTTP/1.1 \(status)\r
-        Content-Type: \(contentType)\r
-        Content-Length: \(body.count)\r
-        Cache-Control: no-store, no-cache, must-revalidate\r
-        Access-Control-Allow-Origin: *\r
-        Connection: close\r
-        \r
-        """
+        var headerLines = [
+            "HTTP/1.1 \(status)",
+            "Content-Type: \(contentType)",
+            "Content-Length: \(body.count)",
+            "Cache-Control: no-store, no-cache, must-revalidate",
+            "Access-Control-Allow-Origin: *",
+            "Connection: close"
+        ]
+
+        headerLines.append(contentsOf: extraHeaders)
+
+        let header =
+            headerLines.joined(separator: "\r\n")
+            + "\r\n\r\n"
 
         var response = Data(header.utf8)
-        response.append(body)
+
+        if includeBody {
+            response.append(body)
+        }
 
         connection.send(
             content: response,
@@ -819,6 +865,50 @@ private final class PlaygroundLiveHTTPServer {
                 connection.cancel()
             }
         )
+    }
+
+    private func parseByteRange(
+        from header: String,
+        dataCount: Int
+    ) -> ClosedRange<Int>? {
+        guard dataCount > 0 else { return nil }
+
+        let lower = header.lowercased()
+        guard let marker = lower.range(of: "bytes=") else {
+            return nil
+        }
+
+        let value = lower[marker.upperBound...]
+            .trimmingCharacters(in: .whitespaces)
+
+        let parts = value.split(
+            separator: "-",
+            maxSplits: 1,
+            omittingEmptySubsequences: false
+        )
+
+        guard !parts.isEmpty else { return nil }
+
+        let start = Int(parts[0]) ?? 0
+        let requestedEnd: Int?
+
+        if parts.count > 1, !parts[1].isEmpty {
+            requestedEnd = Int(parts[1])
+        } else {
+            requestedEnd = nil
+        }
+
+        guard start >= 0, start < dataCount else {
+            return nil
+        }
+
+        let end = min(
+            requestedEnd ?? (dataCount - 1),
+            dataCount - 1
+        )
+
+        guard end >= start else { return nil }
+        return start...end
     }
 
     private func resetStatistics() {
