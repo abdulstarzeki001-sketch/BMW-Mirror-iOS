@@ -669,7 +669,7 @@ private final class PlaygroundLiveHTTPServer {
 
             if let absoluteURL = URL(string: rawTarget),
                absoluteURL.scheme != nil {
-                var components = URLComponents(
+                let components = URLComponents(
                     url: absoluteURL,
                     resolvingAgainstBaseURL: false
                 )
@@ -705,7 +705,7 @@ private final class PlaygroundLiveHTTPServer {
 
             let fullData = response.data
             let range = rangeHeader.flatMap {
-                parseByteRange(
+                self.parseByteRange(
                     from: $0,
                     dataCount: fullData.count
                 )
