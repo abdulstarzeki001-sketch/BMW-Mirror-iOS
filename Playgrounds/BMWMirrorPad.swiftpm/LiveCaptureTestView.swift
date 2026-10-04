@@ -22,7 +22,7 @@ struct LiveCaptureTestView: View {
 
                     Spacer()
 
-                    Text("FINAL-R3-20261004-0245")
+                    Text("FINAL-R4-FULLSCREEN-20261004")
                         .font(.caption2.monospaced().bold())
                         .foregroundStyle(.green)
                 }
@@ -31,7 +31,9 @@ struct LiveCaptureTestView: View {
                         alignment: .leading
                     )
 
-                Text("هذا الاختبار يلتقط محتوى BMW Mirror Pad نفسه عبر ReplayKit، يحوله إلى H.264/HLS محلي (فيديو فقط حاليًا)، ثم يشغله عبر AVPlayer ويخرجه إلى AirPlay.")
+                Text(captureManager.captureMode == .fullDisplay
+                    ? "وضع الشاشة الكاملة يستخدم ScreenCaptureKit على iOS/iPadOS 27+، ثم يحول الإطارات إلى H.264/HLS ويخرجها عبر AVPlayer/AirPlay."
+                    : "وضع داخل التطبيق يستخدم ReplayKit لالتقاط BMW Mirror Pad نفسه، ثم يحوله إلى H.264/HLS ويخرجه عبر AVPlayer/AirPlay.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(
@@ -39,6 +41,7 @@ struct LiveCaptureTestView: View {
                         alignment: .leading
                     )
 
+                captureModeCard
                 animatedCaptureTarget
                 captureStatusCard
                 hlsMetricsCard
@@ -99,6 +102,53 @@ struct LiveCaptureTestView: View {
             playerManager.stop()
             captureManager.shutdown()
         }
+    }
+
+    private var captureModeCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("مصدر الالتقاط")
+                .font(.headline)
+
+            Picker(
+                "مصدر الالتقاط",
+                selection: $captureManager.captureMode
+            ) {
+                ForEach(
+                    PlaygroundCaptureMode.allCases
+                ) { mode in
+                    Text(mode.title)
+                        .tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .disabled(
+                captureManager.isCapturing
+                    || captureManager.isBusy
+            )
+
+            Text(captureManager.captureModeDetail)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if captureManager.captureMode == .fullDisplay {
+                Text(
+                    captureManager.supportsFullDisplayCapture
+                        ? "بعد الضغط على بدء الالتقاط ستظهر نافذة النظام؛ اختر الشاشة الكاملة."
+                        : "هذا الخيار غير متاح على هذا النظام."
+                )
+                .font(.caption2)
+                .foregroundStyle(
+                    captureManager.supportsFullDisplayCapture
+                        ? .green
+                        : .orange
+                )
+            }
+        }
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(
+            RoundedRectangle(cornerRadius: 18)
+        )
     }
 
     private var animatedCaptureTarget: some View {
@@ -186,7 +236,19 @@ struct LiveCaptureTestView: View {
     private var captureStatusCard: some View {
         VStack(spacing: 10) {
             metricRow(
-                "ReplayKit",
+                "Capture Mode",
+                captureManager.captureMode.title
+            )
+
+            metricRow(
+                "ScreenCaptureKit Full Display",
+                captureManager.supportsFullDisplayCapture
+                    ? "متاح"
+                    : "غير متاح"
+            )
+
+            metricRow(
+                "ReplayKit In-App",
                 captureManager.isReplayKitAvailable
                     ? "متاح"
                     : "غير متاح"
@@ -220,7 +282,11 @@ struct LiveCaptureTestView: View {
                 Label(
                     captureManager.isCapturing
                         ? "إيقاف الالتقاط"
-                        : "بدء Live Capture",
+                        : (
+                            captureManager.captureMode == .fullDisplay
+                                ? "بدء الشاشة الكاملة"
+                                : "بدء Live Capture"
+                        ),
                     systemImage:
                         captureManager.isCapturing
                         ? "stop.fill"
@@ -518,6 +584,8 @@ struct LiveCaptureTestView: View {
 
         Capture
         -------
+        Mode: \(captureManager.captureMode.title)
+        Full display supported: \(captureManager.supportsFullDisplayCapture)
         Capturing: \(captureManager.isCapturing)
         Video frames: \(captureManager.capturedVideoFrames)
         Audio buffers: \(captureManager.capturedAudioBuffers)
