@@ -262,6 +262,11 @@ struct LiveCaptureTestView: View {
                 captureManager.lastClientEndpoint
             )
 
+            metricRow(
+                "Last Path",
+                captureManager.lastRequestPath
+            )
+
             if let url = captureManager.playbackURL {
                 Text(url.absoluteString)
                     .font(.caption2.monospaced())
@@ -311,6 +316,17 @@ struct LiveCaptureTestView: View {
                 "Stalls",
                 "\(playerManager.playbackStallCount)"
             )
+
+            if let playerError = playerManager.errorText {
+                Text("AVPlayer: \(playerError)")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: .leading
+                    )
+                    .textSelection(.enabled)
+            }
 
             HStack(spacing: 16) {
                 VStack(spacing: 6) {
