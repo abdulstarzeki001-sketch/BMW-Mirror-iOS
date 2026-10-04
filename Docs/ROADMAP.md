@@ -160,14 +160,14 @@
 - Added external HLS request metrics
 - Added animated on-screen capture target
 
-## 🟡 Stage 13D — Physical Live Capture → AirPlay Validation
-- Start Live Capture on the iPad
-- Wait for HLS Ready
-- Select `EShare-7866`
-- Confirm the animated capture target appears on the TV
-- Confirm `External Playback = active`
-- Confirm `External HLS Requests > 0`
-- Record stalls and first-ready latency
+## ✅ Stage 13D — Physical Live Capture → AirPlay Validation
+- ReplayKit live capture validated on physical iPad
+- HLS self-validation passed through AVFoundation
+- AVPlayer local playback reached rate 1.0
+- `External Playback = true`
+- `External HLS Requests > 0`
+- External receiver fetched real `.m4s` media segments
+- Live image appeared on the external display
 
 
 ## 🟡 Stage 13E — Live HLS Segment Reliability
@@ -192,3 +192,26 @@
   - one-second keyframe interval remains requested
   - video-only transport remains for this validation
 - Physical v4 re-test pending
+
+
+## ✅ Stage 14A — Full Display ScreenCaptureKit Build (iOS/iPadOS 27+)
+- Added ScreenCaptureKit full-display controller to the Swift Playgrounds harness
+- Uses the system `SCContentSharingPicker`
+- Defaults to full-display capture on iOS/iPadOS 27+
+- Screen samples feed the same proven H.264/HLS/AirPlay transport
+- Added `screen-capture` background mode
+- In-app ReplayKit remains available as a fallback
+
+## 🟡 Stage 14B — Physical Full Display → AirPlay Validation
+- Open BMW Mirror Pad Full Screen R4 on iPadOS 27+
+- Choose **الشاشة كاملة**
+- Start capture and select the full display in the system picker
+- Leave BMW Mirror Pad and open another app
+- Confirm the external display follows the iPad screen
+- Confirm `External Playback = true`
+- Confirm external HLS media requests continue while BMW Mirror Pad is backgrounded
+
+## 🟡 Stage 14C — BMW X6 2025 Full Display Test
+- Connect the validated full-display pipeline to the BMW receiver path
+- Verify vehicle receiver compatibility and latency
+- Keep CarPlay Video entitlement work separate until Apple approval is available
