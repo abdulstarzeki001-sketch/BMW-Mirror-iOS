@@ -179,3 +179,16 @@
 - `initialSegmentStartTime` is no longer set for manual `.indefinite` segmentation
 - One-second keyframe duration is requested for cleaner segment boundaries
 - Physical re-test pending
+
+
+## 🟡 Stage 13F — Encoded HLS segmentation correction
+- Physical iPad v3 exposed `Cannot start file writing`
+- Apple documents that custom segmentation with `preferredOutputSegmentInterval = .indefinite` + `flushSegment()` is passthrough-only
+- That mode cannot be used while AVAssetWriter is encoding raw ReplayKit frames
+- Live HLS has been corrected to encoded interval segmentation:
+  - positive 1-second `preferredOutputSegmentInterval`
+  - numeric `initialSegmentStartTime`
+  - H.264 encoding remains enabled
+  - one-second keyframe interval remains requested
+  - video-only transport remains for this validation
+- Physical v4 re-test pending
