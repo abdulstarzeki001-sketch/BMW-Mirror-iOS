@@ -9,6 +9,8 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var playbackStateText = "متوقف"
     @Published private(set) var waitingReasonText = "—"
+    @Published private(set) var currentTimeText = "0.0 s"
+    @Published private(set) var playerRateText = "0.0"
     @Published private(set) var isExternalPlaybackActive = false
     @Published private(set) var isPlaybackLikelyToKeepUp = false
     @Published private(set) var playbackStallCount = 0
@@ -94,6 +96,15 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
         requestImmediatePlayback()
     }
 
+    func ensurePlayback() {
+        desiredPlayback = true
+
+        if player.currentItem?.status == .readyToPlay {
+            seekNearLiveEdgeIfNeeded()
+            requestImmediatePlayback()
+        }
+    }
+
     func togglePlayback() {
         if desiredPlayback || player.timeControlStatus == .playing {
             desiredPlayback = false
@@ -116,6 +127,14 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
         let timeControlStatus = player.timeControlStatus
 
         isPlaying = timeControlStatus == .playing
+        currentTimeText = String(
+            format: "%.1f s",
+            max(CMTimeGetSeconds(player.currentTime()), 0)
+        )
+        playerRateText = String(
+            format: "%.1f",
+            player.rate
+        )
         isExternalPlaybackActive = player.isExternalPlaybackActive
         isPlaybackLikelyToKeepUp =
             player.currentItem?.isPlaybackLikelyToKeepUp ?? false
@@ -158,6 +177,7 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
            player.currentItem?.status == .readyToPlay,
            timeControlStatus == .paused,
            Date().timeIntervalSince(lastPlayRequestAt) > 1.0 {
+            seekNearLiveEdgeIfNeeded()
             requestImmediatePlayback()
         }
 
@@ -236,6 +256,37 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
                     self.itemStatusText = "غير معروف"
                 }
             }
+        }
+    }
+
+    private func seekNearLiveEdgeIfNeeded() {
+        guard
+            let item = player.currentItem,
+            let range = item.seekableTimeRanges.last?.timeRangeValue
+        else {
+            return
+        }
+
+        let liveEdge = CMTimeRangeGetEnd(range)
+        let current = player.currentTime()
+        let delta = CMTimeGetSeconds(
+            CMTimeSubtract(liveEdge, current)
+        )
+
+        if delta.isFinite, delta > 3.0 {
+            let target = CMTimeSubtract(
+                liveEdge,
+                CMTime(
+                    seconds: 1.0,
+                    preferredTimescale: 600
+                )
+            )
+
+            player.seek(
+                to: target,
+                toleranceBefore: .zero,
+                toleranceAfter: .zero
+            )
         }
     }
 
