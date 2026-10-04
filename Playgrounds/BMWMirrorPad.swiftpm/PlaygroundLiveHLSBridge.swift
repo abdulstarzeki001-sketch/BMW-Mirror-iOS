@@ -174,7 +174,6 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
 
     private var writer: AVAssetWriter?
     private var videoInput: AVAssetWriterInput?
-    private var audioInput: AVAssetWriterInput?
     private var sessionStartTime: CMTime = .invalid
     private var lastFlushPresentationTime: CMTime = .invalid
     private var writingStarted = false
@@ -191,7 +190,6 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             writer?.cancelWriting()
             writer = nil
             videoInput = nil
-            audioInput = nil
             sessionStartTime = .invalid
             lastFlushPresentationTime = .invalid
             writingStarted = false
@@ -219,12 +217,10 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             guard let writer, writingStarted else {
                 writer = nil
                 videoInput = nil
-                audioInput = nil
                 return
             }
 
             videoInput?.markAsFinished()
-            audioInput?.markAsFinished()
 
             writer.finishWriting { [weak self] in
                 guard let self else { return }
@@ -236,7 +232,6 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
 
                 self.writer = nil
                 self.videoInput = nil
-                self.audioInput = nil
                 self.writingStarted = false
                 self.onStatistics?()
             }
@@ -290,32 +285,10 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
     }
 
     private func appendAudioLocked(_ sampleBuffer: CMSampleBuffer) {
-        guard
-            sampleBuffer.isValid,
-            writingStarted,
-            let writer,
-            let audioInput,
-            writer.status == .writing,
-            audioInput.isReadyForMoreMediaData
-        else {
-            return
-        }
-
-        let presentationTime =
-            CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-
-        if sessionStartTime.isValid,
-           CMTimeCompare(
-            presentationTime,
-            sessionStartTime
-           ) < 0 {
-            return
-        }
-
-        if !audioInput.append(sampleBuffer),
-           let error = writer.error {
-            onError?(error)
-        }
+        // Intentionally video-only for the live AirPlay transport.
+        // A silent/empty AAC input can prevent AVAssetWriter from
+        // finalizing CMAF/HLS segments on real devices.
+        _ = sampleBuffer
     }
 
     private func configureWriter(
@@ -352,9 +325,10 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             AVVideoWidthKey: width,
             AVVideoHeightKey: height,
             AVVideoCompressionPropertiesKey: [
-                AVVideoAverageBitRateKey: 3_500_000,
+                AVVideoAverageBitRateKey: 2_500_000,
                 AVVideoExpectedSourceFrameRateKey: 30,
                 AVVideoMaxKeyFrameIntervalKey: 30,
+                AVVideoMaxKeyFrameIntervalDurationKey: 1.0,
                 AVVideoProfileLevelKey:
                     AVVideoProfileLevelH264HighAutoLevel
             ]
@@ -373,28 +347,8 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
 
         writer.add(videoInput)
 
-        let audioSettings: [String: Any] = [
-            AVFormatIDKey: kAudioFormatMPEG4AAC,
-            AVSampleRateKey: 48_000,
-            AVNumberOfChannelsKey: 2,
-            AVEncoderBitRateKey: 128_000
-        ]
-
-        let audioInput = AVAssetWriterInput(
-            mediaType: .audio,
-            outputSettings: audioSettings
-        )
-        audioInput.expectsMediaDataInRealTime = true
-
-        if writer.canAdd(audioInput) {
-            writer.add(audioInput)
-            self.audioInput = audioInput
-        }
-
         let startTime =
             CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-
-        writer.initialSegmentStartTime = startTime
 
         guard writer.startWriting() else {
             throw writer.error ?? BridgeError.cannotStartWriter
