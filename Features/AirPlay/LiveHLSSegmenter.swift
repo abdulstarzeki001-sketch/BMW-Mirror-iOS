@@ -21,7 +21,6 @@ final class LiveHLSSegmenter: NSObject {
     private var writer: AVAssetWriter?
     private var videoInput: AVAssetWriterInput?
     private var sessionStartTime: CMTime = .invalid
-    private var lastFlushPresentationTime: CMTime = .invalid
     private var writingStarted = false
 
     init(store: LiveHLSStore) {
@@ -106,23 +105,7 @@ final class LiveHLSSegmenter: NSObject {
                 return
             }
 
-            let presentationTime =
-                CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
-            if !lastFlushPresentationTime.isValid {
-                lastFlushPresentationTime = presentationTime
-            }
-
-            let elapsed = CMTimeSubtract(
-                presentationTime,
-                lastFlushPresentationTime
-            )
-
-            if elapsed.isNumeric,
-               CMTimeGetSeconds(elapsed) >= 1.0 {
-                writer.flushSegment()
-                lastFlushPresentationTime = presentationTime
-            }
         } catch {
             onError?(error)
         }
@@ -156,7 +139,10 @@ final class LiveHLSSegmenter: NSObject {
 
         let writer = AVAssetWriter(contentType: mp4Type)
         writer.outputFileTypeProfile = .mpeg4AppleHLS
-        writer.preferredOutputSegmentInterval = .indefinite
+        writer.preferredOutputSegmentInterval = CMTime(
+            seconds: 1.0,
+            preferredTimescale: 600
+        )
         writer.delegate = self
 
         let videoSettings: [String: Any] = [
@@ -186,6 +172,8 @@ final class LiveHLSSegmenter: NSObject {
 
         let startTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
+        writer.initialSegmentStartTime = startTime
+
         guard writer.startWriting() else {
             throw writer.error ?? BridgeError.cannotStartWriter
         }
@@ -195,7 +183,6 @@ final class LiveHLSSegmenter: NSObject {
         self.writer = writer
         self.videoInput = videoInput
         self.sessionStartTime = startTime
-        self.lastFlushPresentationTime = startTime
         self.writingStarted = true
     }
 
