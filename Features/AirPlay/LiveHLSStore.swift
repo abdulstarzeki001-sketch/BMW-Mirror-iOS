@@ -43,10 +43,21 @@ final class LiveHLSStore {
         lock.lock()
         defer { lock.unlock() }
 
+        let safeDuration = max(duration, 0.1)
+
+        let programDateTime: Date
+        if let previous = segments.last {
+            programDateTime = previous.programDateTime
+                .addingTimeInterval(previous.duration)
+        } else {
+            programDateTime = Date()
+                .addingTimeInterval(-safeDuration)
+        }
+
         let segment = LiveHLSSegment(
             sequence: nextSequence,
-            duration: max(duration, 0.1),
-            programDateTime: Date(),
+            duration: safeDuration,
+            programDateTime: programDateTime,
             data: data
         )
 
@@ -110,13 +121,13 @@ final class LiveHLSStore {
                 return nil
             }
 
-            return (segment.data, "video/mp4")
+            return (segment.data, "video/iso.segment")
         }
     }
 
     private func makePlaylistLocked() -> String {
         let maxDuration = segments.map(\.duration).max() ?? 1
-        let targetDuration = max(1, Int(ceil(maxDuration)))
+        let targetDuration = max(2, Int(ceil(maxDuration)))
         let firstSequence = segments.first?.sequence ?? 0
 
         var lines = [
@@ -137,10 +148,13 @@ final class LiveHLSStore {
             .withFractionalSeconds
         ]
 
-        for segment in segments {
+        if let first = segments.first {
             lines.append(
-                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: segment.programDateTime))"
+                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: first.programDateTime))"
             )
+        }
+
+        for segment in segments {
             lines.append(String(format: "#EXTINF:%.3f,", segment.duration))
             lines.append(segment.filename)
         }
