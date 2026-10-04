@@ -21,6 +21,7 @@ required_files=(
   "$ROOT/PlaygroundAirPlayRoutePicker.swift"
   "$ROOT/PlaygroundDiagnostics.swift"
   "$ROOT/LiveCaptureTestView.swift"
+  "$ROOT/PlaygroundHLSValidator.swift"
   "$ROOT/PlaygroundCaptureManager.swift"
   "$ROOT/PlaygroundLiveHLSBridge.swift"
   "$ROOT/README.md"
@@ -77,3 +78,9 @@ print("✅ Swift Playgrounds AdditionalInfo.plist is valid")
 PY
 
 pass "BMW Mirror Pad playground structure is ready"
+
+
+grep -q "AVURLAsset" "$ROOT/PlaygroundHLSValidator.swift"   || fail "AVFoundation live HLS self-validation is missing"
+grep -q "CODECS=" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Master playlist CODECS attribute is missing"
+grep -q "RESOLUTION=" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "Master playlist RESOLUTION attribute is missing"
+grep -q "Accept-Ranges: bytes" "$ROOT/PlaygroundLiveHLSBridge.swift"   || fail "HTTP byte-range support is missing"
