@@ -129,7 +129,7 @@ private final class PlaygroundLiveHLSStore {
                 return nil
             }
 
-            return (segment.data, "video/iso.segment")
+            return (segment.data, "video/mp4")
         }
     }
 
