@@ -3,6 +3,7 @@ import Foundation
 struct LiveHLSSegment {
     let sequence: Int
     let duration: Double
+    let programDateTime: Date
     let data: Data
 
     var filename: String {
@@ -45,6 +46,7 @@ final class LiveHLSStore {
         let segment = LiveHLSSegment(
             sequence: nextSequence,
             duration: max(duration, 0.1),
+            programDateTime: Date(),
             data: data
         )
 
@@ -76,7 +78,7 @@ final class LiveHLSStore {
         lock.lock()
         defer { lock.unlock() }
 
-        return initializationSegment != nil && !segments.isEmpty
+        return initializationSegment != nil && segments.count >= 3
     }
 
     func response(for path: String) -> (data: Data, contentType: String)? {
@@ -108,7 +110,7 @@ final class LiveHLSStore {
                 return nil
             }
 
-            return (segment.data, "video/iso.segment")
+            return (segment.data, "video/mp4")
         }
     }
 
@@ -119,7 +121,7 @@ final class LiveHLSStore {
 
         var lines = [
             "#EXTM3U",
-            "#EXT-X-VERSION:7",
+            "#EXT-X-VERSION:6",
             "#EXT-X-TARGETDURATION:\(targetDuration)",
             "#EXT-X-MEDIA-SEQUENCE:\(firstSequence)",
             "#EXT-X-INDEPENDENT-SEGMENTS"
@@ -129,7 +131,16 @@ final class LiveHLSStore {
             lines.append("#EXT-X-MAP:URI=\"init.mp4\"")
         }
 
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
+
         for segment in segments {
+            lines.append(
+                "#EXT-X-PROGRAM-DATE-TIME:\(dateFormatter.string(from: segment.programDateTime))"
+            )
             lines.append(String(format: "#EXTINF:%.3f,", segment.duration))
             lines.append(segment.filename)
         }
