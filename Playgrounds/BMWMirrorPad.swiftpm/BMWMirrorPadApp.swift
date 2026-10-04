@@ -4,7 +4,9 @@ import SwiftUI
 struct BMWMirrorPadApp: App {
     var body: some Scene {
         WindowGroup {
-            MainView()
+            NavigationStack {
+                LiveCaptureTestView()
+            }
         }
     }
 }
