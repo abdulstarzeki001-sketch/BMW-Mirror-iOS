@@ -14,11 +14,15 @@
 - AVAudioSession route
 - Network.framework path/interfaces
 - تقرير اختبار قابل للمشاركة
+- ReplayKit in-app live capture
+- H.264 / Apple HLS live encoding
+- Local HLS HTTP server
+- End-to-end Live Capture → AirPlay test
 
 ## ماذا لا تختبر؟
 
-هذه النسخة لا تحتوي على:
-- ReplayKit Broadcast Upload Extension
+هذه النسخة تحتوي على ReplayKit **داخل BMW Mirror Pad نفسه** لاختبار المسار الحي، لكنها لا تحتوي على:
+- ReplayKit Broadcast Upload Extension لالتقاط النظام بالكامل
 - ScreenCaptureKit full-display capture
 - CarPlay scene
 - CarPlay Video entitlement
@@ -65,3 +69,33 @@ http://IP-OF-IPHONE:8765/live.m3u8
 ## ملاحظة
 
 Swift Playgrounds يستطيع إنشاء وتشغيل App projects على iPad، لكن هذا الـHarness هدفه الاختبار السريع فقط. المشروع الكامل مع Broadcast Extension وCarPlay يبقى في `BMWMirror.xcodeproj`.
+
+
+## اختبار Live Capture → AirPlay
+
+من الصفحة الرئيسية افتح:
+
+**Live Capture → AirPlay**
+
+ثم:
+
+1. اضغط **بدء Live Capture**.
+2. انتظر حتى تصبح **HLS Ready = نعم**.
+3. اضغط **تشغيل Live HLS**.
+4. اختر مستقبل AirPlay.
+5. النجاح القوي يكون عند:
+   - `External Playback = نشط`
+   - `External HLS Requests > 0`
+   - ظهور شريط الاختبار المتحرك على التلفزيون.
+
+هذا الاختبار يثبت السلسلة الكاملة داخل الـiPad:
+
+```text
+ReplayKit
+→ H.264
+→ Live HLS
+→ Local HTTP
+→ AVPlayer
+→ AirPlay
+→ External TV
+```
