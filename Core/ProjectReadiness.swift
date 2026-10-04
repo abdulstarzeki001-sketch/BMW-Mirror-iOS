@@ -97,13 +97,19 @@ enum ProjectReadiness {
             .init(
                 id: "ipad-live-capture-airplay",
                 title: "iPad Live Capture → AirPlay",
-                detail: "ReplayKit in-app capture + H.264/HLS + local server + AVPlayer/AirPlay جاهز للاختبار الفعلي",
-                isReady: false
+                detail: "نجح ReplayKit → H.264/HLS → AVPlayer → AirPlay فعليًا مع External Playback وطلبات HLS خارجية",
+                isReady: true
             ),
             .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
-                detail: "AirPlay الخارجي ثبت مع Apple HLS؛ المتبقي إثبات Local Live HLS القادم من الالتقاط الحي",
+                detail: "ثبت فعليًا على EShare مع External Playback نشط وطلبات media خارجية",
+                isReady: true
+            ),
+            .init(
+                id: "ipad-full-display-sck",
+                title: "iPad Full Display → AirPlay (iOS 27+)",
+                detail: "ScreenCaptureKit system picker موصول بنفس HLS/AirPlay pipeline؛ الاختبار الفعلي للشاشة الكاملة هو الخطوة التالية",
                 isReady: false
             ),
             .init(
