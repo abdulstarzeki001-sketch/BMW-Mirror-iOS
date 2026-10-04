@@ -24,6 +24,9 @@ struct LiveAirPlayBridgeView: View {
                     .frame(maxWidth: .infinity)
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .onAppear {
+                        playerManager.ensurePlayback()
+                    }
 
                 SectionCard(title: "Live HLS") {
                     row("Capture", captureManager.isCapturing ? "يعمل" : "متوقف")
@@ -43,6 +46,10 @@ struct LiveAirPlayBridgeView: View {
                 SectionCard(title: "AVPlayer / AirPlay") {
                     row("Player Item", playerManager.playerItemStatusText)
                     row("Playback", playerManager.isPlaying ? "يعمل" : "متوقف")
+                    row("Playback state", playerManager.playbackStateText)
+                    row("Player rate", playerManager.playerRateText)
+                    row("Current time", playerManager.currentTimeText)
+                    row("Waiting reason", playerManager.waitingReasonText)
                     row(
                         "Keep Up",
                         playerManager.isPlaybackLikelyToKeepUp ? "نعم" : "لا"
@@ -56,6 +63,7 @@ struct LiveAirPlayBridgeView: View {
                         "External transition",
                         playerManager.externalPlaybackTransitionText
                     )
+                    row("Error details", playerManager.errorDetailsText)
                 }
 
                 SectionCard(title: "Route / Network") {
@@ -230,6 +238,8 @@ struct LiveAirPlayBridgeView: View {
             url: url,
             label: "BMW Mirror Live HLS"
         )
+
+        playerManager.play()
     }
 
     private func byteText(_ bytes: Int) -> String {
