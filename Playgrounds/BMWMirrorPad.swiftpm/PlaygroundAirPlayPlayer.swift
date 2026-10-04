@@ -7,6 +7,8 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
     @Published private(set) var sourceLabel = "لا يوجد مصدر"
     @Published private(set) var itemStatusText = "لم يبدأ"
     @Published private(set) var isPlaying = false
+    @Published private(set) var playbackStateText = "متوقف"
+    @Published private(set) var waitingReasonText = "—"
     @Published private(set) var isExternalPlaybackActive = false
     @Published private(set) var isPlaybackLikelyToKeepUp = false
     @Published private(set) var playbackStallCount = 0
@@ -20,6 +22,8 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
     private var itemObservation: NSKeyValueObservation?
     private var stalledObserver: NSObjectProtocol?
     private var previousExternalState = false
+    private var desiredPlayback = false
+    private var lastPlayRequestAt = Date.distantPast
 
     init() {
         configureAudioAndPlayer()
@@ -64,7 +68,8 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
         externalTransitionText = "لم يبدأ"
 
         let item = AVPlayerItem(url: url)
-        item.preferredForwardBufferDuration = 1.5
+        item.preferredForwardBufferDuration = 0.5
+        item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
         observe(item: item)
         player.replaceCurrentItem(with: item)
@@ -85,50 +90,94 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
     }
 
     func play() {
-        player.play()
-        refresh()
+        desiredPlayback = true
+        requestImmediatePlayback()
     }
 
     func togglePlayback() {
-        if player.timeControlStatus == .playing {
+        if desiredPlayback || player.timeControlStatus == .playing {
+            desiredPlayback = false
             player.pause()
         } else {
-            player.play()
+            desiredPlayback = true
+            requestImmediatePlayback()
         }
 
         refresh()
     }
 
     func stop() {
+        desiredPlayback = false
         player.pause()
-        player.seek(to: .zero)
         refresh()
     }
 
     func refresh() {
-        isPlaying = player.timeControlStatus == .playing
+        let timeControlStatus = player.timeControlStatus
+
+        isPlaying = timeControlStatus == .playing
         isExternalPlaybackActive = player.isExternalPlaybackActive
-        isPlaybackLikelyToKeepUp = player.currentItem?.isPlaybackLikelyToKeepUp ?? false
+        isPlaybackLikelyToKeepUp =
+            player.currentItem?.isPlaybackLikelyToKeepUp ?? false
+
+        switch timeControlStatus {
+        case .paused:
+            playbackStateText = desiredPlayback
+                ? "متوقف مؤقتًا — إعادة تشغيل تلقائية"
+                : "متوقف"
+            waitingReasonText = "—"
+
+        case .waitingToPlayAtSpecifiedRate:
+            playbackStateText = "ينتظر بدء التشغيل"
+            waitingReasonText =
+                Self.waitingReasonText(
+                    player.reasonForWaitingToPlay
+                )
+
+        case .playing:
+            playbackStateText = "يعمل"
+            waitingReasonText = "—"
+
+        @unknown default:
+            playbackStateText = "غير معروف"
+            waitingReasonText = "—"
+        }
 
         if isExternalPlaybackActive != previousExternalState {
             previousExternalState = isExternalPlaybackActive
             externalTransitionText = isExternalPlaybackActive
                 ? "تفعّل عند \(Self.clockText())"
                 : "توقف عند \(Self.clockText())"
+
+            if desiredPlayback {
+                requestImmediatePlayback()
+            }
+        }
+
+        if desiredPlayback,
+           player.currentItem?.status == .readyToPlay,
+           timeControlStatus == .paused,
+           Date().timeIntervalSince(lastPlayRequestAt) > 1.0 {
+            requestImmediatePlayback()
         }
 
         if isExternalPlaybackActive {
             statusText = "External AirPlay نشط"
         } else if isPlaying {
             statusText = "\(sourceLabel) يعمل محليًا"
+        } else if timeControlStatus == .waitingToPlayAtSpecifiedRate {
+            statusText = "\(sourceLabel) ينتظر: \(waitingReasonText)"
         } else if player.currentItem?.status == .readyToPlay {
-            statusText = "\(sourceLabel) جاهز"
+            statusText = desiredPlayback
+                ? "\(sourceLabel) يعيد بدء التشغيل"
+                : "\(sourceLabel) جاهز"
         }
     }
 
     private func configureAudioAndPlayer() {
         player.allowsExternalPlayback = true
         player.usesExternalPlaybackWhileExternalScreenIsActive = true
+        player.automaticallyWaitsToMinimizeStalling = false
 
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -160,6 +209,10 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
                     self.itemStatusText = "جاهز"
                     self.statusText = "\(self.sourceLabel) جاهز"
 
+                    if self.desiredPlayback {
+                        self.requestImmediatePlayback()
+                    }
+
                 case .failed:
                     self.itemStatusText = "فشل"
                     self.statusText = "فشل تشغيل \(self.sourceLabel)"
@@ -183,6 +236,42 @@ final class PlaygroundAirPlayPlayer: ObservableObject {
                     self.itemStatusText = "غير معروف"
                 }
             }
+        }
+    }
+
+    private func requestImmediatePlayback() {
+        lastPlayRequestAt = Date()
+
+        guard let item = player.currentItem else {
+            playbackStateText = "لا يوجد عنصر تشغيل"
+            return
+        }
+
+        if item.status == .readyToPlay {
+            player.playImmediately(atRate: 1.0)
+        } else {
+            // Preserve the user's intent. The status observer
+            // reissues playImmediately as soon as the item is ready.
+            player.play()
+        }
+
+        refresh()
+    }
+
+    private static func waitingReasonText(
+        _ reason: AVPlayer.WaitingReason?
+    ) -> String {
+        guard let reason else { return "غير محدد" }
+
+        switch reason {
+        case .toMinimizeStalls:
+            return "انتظار لتقليل التوقف"
+        case .noItemToPlay:
+            return "لا يوجد عنصر تشغيل"
+        case .evaluatingBufferingRate:
+            return "تقييم معدل التخزين المؤقت"
+        default:
+            return reason.rawValue
         }
     }
 
