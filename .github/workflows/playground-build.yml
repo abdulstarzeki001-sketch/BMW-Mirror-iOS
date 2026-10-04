@@ -28,17 +28,17 @@ jobs:
         run: |
           rm -rf build-artifact
           mkdir -p build-artifact
-          cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-Final.swiftpm
+          cp -R Playgrounds/BMWMirrorPad.swiftpm build-artifact/BMWMirrorPad-Final-R3.swiftpm
           ditto -c -k --sequesterRsrc --keepParent \
             build-artifact/BMWMirrorPad-Final.swiftpm \
-            build-artifact/BMWMirrorPad-Final.swiftpm.zip
+            build-artifact/BMWMirrorPad-Final-R3.swiftpm.zip
 
       - name: Build BMW Mirror Pad for iOS Simulator
         working-directory: Playgrounds/BMWMirrorPad.swiftpm
         run: |
           set -o pipefail
           xcodebuild \
-            -scheme "BMW Mirror Pad" \
+            -scheme "BMW Mirror Pad Final R3" \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
@@ -48,7 +48,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: BMWMirrorPad-Final
+          name: BMWMirrorPad-Final-R3
           path: build-artifact/BMWMirrorPad-Final.swiftpm.zip
           if-no-files-found: error
           retention-days: 7
