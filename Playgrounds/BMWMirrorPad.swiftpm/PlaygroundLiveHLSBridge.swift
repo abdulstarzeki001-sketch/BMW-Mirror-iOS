@@ -176,6 +176,7 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
     private var videoInput: AVAssetWriterInput?
     private var audioInput: AVAssetWriterInput?
     private var sessionStartTime: CMTime = .invalid
+    private var lastFlushPresentationTime: CMTime = .invalid
     private var writingStarted = false
 
     init(store: PlaygroundLiveHLSStore) {
@@ -192,6 +193,7 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
             videoInput = nil
             audioInput = nil
             sessionStartTime = .invalid
+            lastFlushPresentationTime = .invalid
             writingStarted = false
             store.reset()
             onStatistics?()
@@ -258,9 +260,29 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
                 return
             }
 
-            if !videoInput.append(sampleBuffer),
-               let error = writer.error {
-                onError?(error)
+            guard videoInput.append(sampleBuffer) else {
+                if let error = writer.error {
+                    onError?(error)
+                }
+                return
+            }
+
+            let presentationTime =
+                CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+
+            if !lastFlushPresentationTime.isValid {
+                lastFlushPresentationTime = presentationTime
+            }
+
+            let elapsed = CMTimeSubtract(
+                presentationTime,
+                lastFlushPresentationTime
+            )
+
+            if elapsed.isNumeric,
+               CMTimeGetSeconds(elapsed) >= 1.0 {
+                writer.flushSegment()
+                lastFlushPresentationTime = presentationTime
             }
         } catch {
             onError?(error)
@@ -322,10 +344,7 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
 
         let writer = AVAssetWriter(contentType: mp4Type)
         writer.outputFileTypeProfile = .mpeg4AppleHLS
-        writer.preferredOutputSegmentInterval = CMTime(
-            seconds: 1,
-            preferredTimescale: 600
-        )
+        writer.preferredOutputSegmentInterval = .indefinite
         writer.delegate = self
 
         let videoSettings: [String: Any] = [
@@ -386,6 +405,7 @@ private final class PlaygroundLiveHLSSegmenter: NSObject {
         self.writer = writer
         self.videoInput = videoInput
         self.sessionStartTime = startTime
+        self.lastFlushPresentationTime = startTime
         self.writingStarted = true
     }
 
