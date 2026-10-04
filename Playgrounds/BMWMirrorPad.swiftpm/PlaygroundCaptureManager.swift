@@ -21,6 +21,9 @@ final class PlaygroundCaptureManager: ObservableObject {
     @Published private(set) var servedBytes = 0
     @Published private(set) var lastClientEndpoint = "—"
     @Published private(set) var lastRequestPath = "—"
+    @Published private(set) var playlistText = "—"
+    @Published private(set) var initializationBytes = 0
+    @Published private(set) var latestSegmentBytes = 0
     @Published private(set) var capturedVideoFrames = 0
     @Published private(set) var capturedAudioBuffers = 0
 
@@ -57,6 +60,9 @@ final class PlaygroundCaptureManager: ObservableObject {
                     snapshot.lastClientEndpoint
                 lastRequestPath =
                     snapshot.lastRequestPath
+                playlistText = snapshot.playlistText
+                initializationBytes = snapshot.initializationBytes
+                latestSegmentBytes = snapshot.latestSegmentBytes
 
                 if isCapturing {
                     statusText = snapshot.statusText
@@ -211,6 +217,9 @@ final class PlaygroundCaptureManager: ObservableObject {
         servedBytes = 0
         lastClientEndpoint = "—"
         lastRequestPath = "—"
+        playlistText = "—"
+        initializationBytes = 0
+        latestSegmentBytes = 0
         capturedVideoFrames = 0
         capturedAudioBuffers = 0
     }
