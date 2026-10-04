@@ -91,13 +91,19 @@ enum ProjectReadiness {
             .init(
                 id: "ipad-airplay-device-test",
                 title: "iPad AirPlay Device Test",
-                detail: "بانتظار تشغيل الـHarness على iPad واختيار مستقبل AirPlay فعلي",
+                detail: "نجح Apple HLS Probe فعليًا عبر AirPlay إلى EShare-7866 مع External Playback نشط",
+                isReady: true
+            ),
+            .init(
+                id: "ipad-live-capture-airplay",
+                title: "iPad Live Capture → AirPlay",
+                detail: "ReplayKit in-app capture + H.264/HLS + local server + AVPlayer/AirPlay جاهز للاختبار الفعلي",
                 isReady: false
             ),
             .init(
                 id: "external-live-airplay",
                 title: "Live HLS → External AirPlay",
-                detail: "الاختبار البرمجي مجهز؛ المتبقي تشغيله على مستقبل AirPlay فعلي",
+                detail: "AirPlay الخارجي ثبت مع Apple HLS؛ المتبقي إثبات Local Live HLS القادم من الالتقاط الحي",
                 isReady: false
             ),
             .init(
